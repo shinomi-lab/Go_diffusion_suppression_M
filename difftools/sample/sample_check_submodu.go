@@ -90,7 +90,19 @@ func sample1() {
 
 	var SeedSet_F []int = diff.Make_seedSet_F(n, K_F, seed)
 
-	fmt.Println(SeedSet_F)
+	var interest_list [][]int = diff.Make_interest_list(n, seed)
+
+	var assum_list [][]int = diff.Make_assum_list(n, seed)
+
+	var seq [16]float64 = diff.Make_probability()
+
+	var prob_map [2][2][2][2]float64 = diff.Map_probagbility(seq)
+
+	fmt.Println(SeedSet_F, interest_list, assum_list)
+
+	fmt.Println((seq))
+
+	fmt.Println(prob_map)
 }
 
 func main() {
