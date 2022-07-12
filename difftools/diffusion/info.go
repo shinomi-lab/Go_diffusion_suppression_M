@@ -21,17 +21,33 @@ var Pops_n int = 2
 // 	return a
 // }
 
-func Make_seedSet_F(n int, k int, seed int64) []int {
+func Make_seedSet_F(n int, k int, seed int64, adj [][]int) []int {
+	//n:ノード数,k:SeedSetFの個数
 	rand.Seed(seed)
 	Fs := make([]int, n)
+	Set := make([]int,0,n)//選ばれる可能性があるノードたち(出次数が1以上)
+
+	for i:=0;i<n;i++{
+		for j:=0;j<n;j++{
+			if adj[i][j] > 0{
+				Set = append(Set,i)
+				break
+			}
+		}
+	}
+	fmt.Println("選ばれうる（F)")
+	fmt.Println(Set)
+	if len(Set) < k{
+		k = len(Set)
+		fmt.Println("十分な数の候補がありません")
+	}
 	for i := 0; i < k; {
-		n := rand.Intn(n)
-		if Fs[n] == 0 {
-			Fs[n] = 1
+		r := Set[rand.Intn(len(Set))]
+		if Fs[r] == 0 {
+			Fs[r] = 1
 			i++
 		}
 	}
-	fmt.Println(rand.Intn(n))
 
 	return Fs
 }
