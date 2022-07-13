@@ -1,241 +1,233 @@
 package optimization
 
-import(
-  "fmt"
-  "math/rand"
-  diff "m/difftools/diffusion"
-  "strings"
-  "encoding/csv"
-  "log"
-  "os"
-  "strconv"
+import (
+	"encoding/csv"
+	"fmt"
+	"log"
+	diff "m/difftools/diffusion"
+	"math/rand"
+	"os"
+	"strconv"
+	"strings"
 )
 
-func Check_submod(seed int64, k int, sample_size int, adj [][]int, SeedSet_F []int, prob_map [2][2][2][2]float64, pop [2]int, interest_list [][]int, assum_list [][]int)([]int, [][]float64){
+func Check_submod(seed int64, k int, sample_size int, adj [][]int, SeedSet_F []int, prob_map [2][2][2][2]float64, pop [2]int, interest_list [][]int, assum_list [][]int) ([]int, [][]float64) {
 
-  var n int = len(adj)
-  var S []int = make([]int, n)
+	var n int = len(adj)
+	var S []int = make([]int, n)
 
+	for i, f := range SeedSet_F {
+		if f > 0 {
+			S[i] = 1
+		}
+	}
 
-  for i, f := range SeedSet_F{
-    if f > 0{
-      S[i] = 1
-    }
-  }
+	var hist [][]float64 = make([][]float64, k)
 
-  var hist [][]float64 = make([][]float64,k)
+	for i := 0; i < k; i++ {
+		hist[i] = make([]float64, n)
+	}
 
-  for i:=0;i<k;i++{
-    hist[i] = make([]float64, n)
-  }
+	sizes := []int{3, 4, 5}
+	loop := 40
+	// sets_len := len(sizes)*loop
 
+	mont_loop := 1000
+	// mont_num := sample_size*mont_loop
 
-  sizes := []int{3, 4, 5}
-  loop := 40
-  // sets_len := len(sizes)*loop
+	temp := make([][13]float64, len(sizes)*loop)
+	temp[1][1] = 1.0
 
-  mont_loop := 10
-  // mont_num := sample_size*mont_loop
+	var s_dist []float64 = make([]float64, n)
 
+	rand.Seed(seed)
 
-  temp := make([][13]float64, len(sizes)*loop)
-  temp[1][1] = 1.0
+	//create file
+	filename := "file1.csv"
+	f, err := os.Create(filename)
+	if err != nil {
+		log.Fatal(err)
+	}
 
-  var s_dist []float64 = make([]float64, n)
+	w := csv.NewWriter(f)
 
-  rand.Seed(seed)
+	colmns := []string{"K_T", "SetA", "SetB", "SetA_r", "SetB_r", "AandB_r", "AorB_r", "IsSubmodularity", "menos"}
+	w.Write(colmns)
+	//main loop
+	for j := 0; j < len(sizes); j++ {
+		fmt.Println(("percent"))
+		fmt.Println(j, len(sizes))
+		for v := 0; v < loop; v++ {
 
-  //create file
-  filename := "file.csv"
-  f, err := os.Create(filename)
-    if err != nil {
-        log.Fatal(err)
-    }
+			var SetA []int
+			var SetB []int
 
-    w := csv.NewWriter(f)
+			Sets := make([][]int, 2)
+			Sets[0] = make([]int, n)
+			Sets[1] = make([]int, n)
 
-    colmns := []string{"K_T","SetA","SetB","SetA_r","SetB_r","AandB_r","AorB_r","IsSubmodularity","menos"}
-    w.Write(colmns)
-  //main loop
-  for j:=0;j<len(sizes);j++{
-    for v:=0;v<loop;v++{
+			SetA = make([]int, n)
+			_ = copy(SetA, S)
+			setA_list := Make_SeedSet_T(SetA, sizes[j], adj)
 
-      var SetA []int
-      var SetB []int
+			SetB = make([]int, n)
+			_ = copy(SetB, S)
+			setB_list := Make_SeedSet_T(SetB, sizes[j], adj)
 
-      Sets := make([][]int,2)
-      Sets[0] = make([]int, n)
-      Sets[1] = make([]int, n)
+			Sets[0] = setA_list
+			Sets[1] = setB_list
 
+			result := make([]float64, 4)
+			// conf := make([]float64, 4)
 
+			var SetAandB []int
+			SetAandB = make([]int, n)
+			_ = copy(SetAandB, S)
+			append_seedset_T(SetAandB, Set_Multi(setA_list, setB_list))
 
-      SetA = make([]int, n)
-      _ = copy(SetA,S)
-      setA_list := Make_SeedSet_T(SetA, sizes[j],adj)
+			var SetAorB []int
+			SetAorB = make([]int, n)
+			_ = copy(SetAorB, S)
+			append_seedset_T(SetAorB, Set_Sum(setA_list, setB_list))
 
-      SetB = make([]int, n)
-      _ = copy(SetB,S)
-      setB_list := Make_SeedSet_T(SetB, sizes[j],adj)
+			Set_use := make([][]int, 4)
+			Set_use[0] = SetA
+			Set_use[1] = SetB
+			Set_use[2] = SetAandB
+			Set_use[3] = SetAorB
 
-      Sets[0] = setA_list
-      Sets[1] = setB_list
+			for i, set := range Set_use {
+				dist := Infl_prop_exp(-1, sample_size*mont_loop, adj, set, prob_map, pop, interest_list, assum_list)
+				result[i] = dist[diff.InfoType_T]
+				//here
+			}
 
-      result := make([]float64, 4)
-      // conf := make([]float64, 4)
+			Sets_string := make([][]string, 2)
+			Sets_string[0] = Int_to_String(Sets[0])
+			Sets_string[1] = Int_to_String(Sets[1])
 
+			part0 := []string{strings.Join(Sets_string[0], "-"), strings.Join(Sets_string[1], "-")} //here
 
+			a := []float64{result[0], result[1], result[2], result[3], BoolToInt(result[0]+result[1] >= result[2]+result[3]), (result[0] + result[1]) - (result[2] + result[3])}
 
-      var SetAandB []int
-      SetAandB = make([]int, n)
-      _ = copy(SetAandB,S)
-      append_seedset_T(SetAandB,Set_Multi(setA_list,setB_list))
+			part1 := Float_to_String(a)
 
-      var SetAorB []int
-      SetAorB = make([]int, n)
-      _ = copy(SetAorB,S)
-      append_seedset_T(SetAorB,Set_Sum(setA_list,setB_list))
+			retu := append(part0, part1...)
 
+			w.Write(retu)
 
+		}
 
-      Set_use := make([][]int,4)
-      Set_use[0] = SetA
-      Set_use[1] = SetB
-      Set_use[2] = SetAandB
-      Set_use[3] = SetAorB
+		//毎回初期化するけど宣言は外でできる？
 
-      for i,set := range Set_use{
-        dist := Infl_prop_exp(-1,sample_size*mont_loop,adj,set,prob_map,pop,interest_list,assum_list)
-        result[i] = dist[diff.InfoType_T]
-        //here
-      }
+		// for i:=0;i<n;i++{
+		//   if
+		s_dist[j] = 0
+		// }
+	}
 
-      Sets_string := make([][]string,2)
-      Sets_string[0] = Int_to_String(Sets[0])
-      Sets_string[1] = Int_to_String(Sets[1])
+	w.Flush()
 
-      part0 := []string{strings.Join(Sets_string[0], "-"),strings.Join(Sets_string[1], "-")}//here
-
-      a := []float64{result[0],result[1],result[2],result[3],BoolToInt(result[0] + result[1] >= result[2] + result[3]),(result[0] + result[1])-(result[2] + result[3])}
-
-      part1 := Float_to_String(a)
-
-      retu := append(part0,part1...)
-
-      w.Write(retu)
-
-    }
-
-
-    //毎回初期化するけど宣言は外でできる？
-
-    // for i:=0;i<n;i++{
-    //   if
-    s_dist[j] = 0
-    // }
-  }
-
-  w.Flush()
-
-  if err := w.Error(); err != nil {
-      log.Fatal(err)
-  }
-  return S,hist
+	if err := w.Error(); err != nil {
+		log.Fatal(err)
+	}
+	return S, hist
 
 }
 
-func Make_SeedSet_T(Su []int, k int, adj [][]int)[]int{
-  n := len(Su)
-  var sets []int
-  Set := make([]int,0,len(Su))//選ばれる可能性があるノードたち(出次数が1以上)
+func Make_SeedSet_T(Su []int, k int, adj [][]int) []int {
+	n := len(Su)
+	var sets []int
+	Set := make([]int, 0, len(Su)) //選ばれる可能性があるノードたち(出次数が1以上)
 
-	for i:=0;i<n;i++{
-		for j:=0;j<n;j++{
-			if adj[i][j] > 0{
-        if Su[i] ==0{
-          Set = append(Set,i)
-  				break
-        }
+	for i := 0; i < n; i++ {
+		for j := 0; j < n; j++ {
+			if adj[i][j] > 0 {
+				if Su[i] == 0 {
+					Set = append(Set, i)
+					break
+				}
 			}
 		}
 	}
-	if len(Set) < k{
+	if len(Set) < k {
 		k = len(Set)
 		fmt.Println("十分な数の候補がありません")
 	}
 
-  for i:=0;i<k;{
-    result := Set[rand.Intn(len(Set))]
+	for i := 0; i < k; {
+		result := Set[rand.Intn(len(Set))]
 
-    if Su[result] == 0{
-      Su[result] = 2
-      sets = append(sets,result)
-      i++
-    }
-  }
-  return sets
+		if Su[result] == 0 {
+			Su[result] = 2
+			sets = append(sets, result)
+			i++
+		}
+	}
+	return sets
 }
 
-func append_seedset_T(Su []int, seedset_t_list []int){
-  for _, i := range seedset_t_list{
-    Su[i] = 2
-  }
+func append_seedset_T(Su []int, seedset_t_list []int) {
+	for _, i := range seedset_t_list {
+		Su[i] = 2
+	}
 }
 
-func Set_Has(setA []int, num int)bool{
-  for _, a := range setA{
-    if a == num{
-      return true
-    }
-  }
-  return false
+func Set_Has(setA []int, num int) bool {
+	for _, a := range setA {
+		if a == num {
+			return true
+		}
+	}
+	return false
 }
 
-func Set_Sum(setA []int, setB []int)[]int{
-  ans := make([]int,len(setA), len(setA)+len(setB))
-  _ = copy(ans,setA)
+func Set_Sum(setA []int, setB []int) []int {
+	ans := make([]int, len(setA), len(setA)+len(setB))
+	_ = copy(ans, setA)
 
-  for _, b := range setB{
-    if Set_Has(ans,b) == false{
-      ans = append(ans,b)
-    }
-  }
-  return ans
+	for _, b := range setB {
+		if Set_Has(ans, b) == false {
+			ans = append(ans, b)
+		}
+	}
+	return ans
 }
 
-func Set_Multi(setA []int, setB []int)[]int{
-  ans := make([]int,0,len(setA))
-  for _, b := range setB{
-    if Set_Has(setA,b){
-      ans = append(ans,b)
-    }
-  }
-  return ans
+func Set_Multi(setA []int, setB []int) []int {
+	ans := make([]int, 0, len(setA))
+	for _, b := range setB {
+		if Set_Has(setA, b) {
+			ans = append(ans, b)
+		}
+	}
+	return ans
 }
 
-func Slice_Sum(slice []float64)float64{
-  var ans float64
-  for _, n := range slice{
-    ans = ans + n
-  }
-  return ans
+func Slice_Sum(slice []float64) float64 {
+	var ans float64
+	for _, n := range slice {
+		ans = ans + n
+	}
+	return ans
 }
 
-func Int_to_String(slice []int)[]string{
-  l1 := len(slice)
-  ans := make([]string,l1)
-  for i:=0;i<l1;i++{
-    ans[i] = strconv.Itoa(slice[i])
-  }
-  return ans
+func Int_to_String(slice []int) []string {
+	l1 := len(slice)
+	ans := make([]string, l1)
+	for i := 0; i < l1; i++ {
+		ans[i] = strconv.Itoa(slice[i])
+	}
+	return ans
 }
 
-func Float_to_String(slice []float64)[]string{
-  l1 := len(slice)
-  ans := make([]string,l1)
-  for i:=0;i<l1;i++{
-    ans[i] = strconv.FormatFloat(slice[i], 'f', 2, 64)
-  }
-  return ans
+func Float_to_String(slice []float64) []string {
+	l1 := len(slice)
+	ans := make([]string, l1)
+	for i := 0; i < l1; i++ {
+		ans[i] = strconv.FormatFloat(slice[i], 'f', 2, 64)
+	}
+	return ans
 }
 
 // func IntSlice_to_csv(slice [][]int, filename string, colmns []string){
@@ -260,10 +252,10 @@ func Float_to_String(slice []float64)[]string{
 //
 // }
 
-func BoolToInt(b bool)float64{
-  if b{
-    return 1.0
-  }else{
-    return 0.0
-  }
+func BoolToInt(b bool) float64 {
+	if b {
+		return 1.0
+	} else {
+		return 0.0
+	}
 }
