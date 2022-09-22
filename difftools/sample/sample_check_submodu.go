@@ -6,6 +6,10 @@ import (
 	"io/ioutil"
 	diff "m/difftools/diffusion"
 	opt "m/difftools/optimization"
+	"encoding/csv"
+	"log"
+	"os"
+	"strings"
 	//"time"
 )
 
@@ -91,25 +95,62 @@ func sample1() {
 	// list2 = []int{48,0,18}
 	// opt.FocusLoop(loop_n,list1,list2,SeedSet_F,1,sample_size,adj,prob_map,pop_list,interest_list,assum_list)
 
+	filename := "GreedyAndStrict.csv"
+	f, err := os.Create(filename)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	w := csv.NewWriter(f)
+
+	colmns := []string{"greedy_ans","strict_ans", "greedy_value", "greedy_value2", "strict_value", "strict_value2", "kinjiritu","random_seed"}
+	w.Write(colmns)
+
+
+	//start loop
 	sample_size = 100
 	var random_seed int64
-	random_seed = 7
+	random_seed = 0
+
+	for random_seed = 0;random_seed<10;random_seed++{
+		greedy_ans,greedy_value,greedy_value2 := opt.Greedy(random_seed, sample_size,adj,SeedSet_F,prob_map,pop_list,interest_list,assum_list,3,false,100000)
+
+		fmt.Println("greedy_ans")
+		fmt.Println(greedy_ans,greedy_value,greedy_value2)
+
+		strict_ans,strict_value,strict_value2 := opt.Strict(random_seed,sample_size,adj,SeedSet_F,prob_map,pop_list,interest_list,assum_list,3,false,100000)
+
+
+		fmt.Println("strict_ans")
+		fmt.Println(strict_ans,strict_value,strict_value2)
+
+		fmt.Println("近似率")
+		fmt.Println(greedy_value2/strict_value2)
+
+		Sets_string := make([][]string, 2)
+		Sets_string[0] = opt.Int_to_String(greedy_ans)
+		Sets_string[1] = opt.Int_to_String(strict_ans)
+
+		part0 := []string{strings.Join(Sets_string[0], "-"), strings.Join(Sets_string[1], "-")} //here
+
+		a := []float64{greedy_value, greedy_value2, strict_value, strict_value2, greedy_value2/strict_value2,float64(seed)}
+
+		part1 := opt.Float_to_String(a)
+
+		retu := append(part0, part1...)
+
+		w.Write(retu)
+	}
+
+	//loop end
+
+	w.Flush()
+
+	if err := w.Error(); err != nil {
+		log.Fatal(err)
+	}
 	//SeedSet_Greedy := make([]int,len(adj))
 	//SeedSet_Greedy[15] = 2
-	greedy_ans,greedy_value,greedy_value2 := opt.Greedy(random_seed, sample_size,adj,SeedSet_F,prob_map,pop_list,interest_list,assum_list,3,false,100000)
-
-	fmt.Println("greedy_ans")
-	fmt.Println(greedy_ans,greedy_value,greedy_value2)
-
-	strict_ans,strict_value,strict_value2 := opt.Strict(random_seed,sample_size,adj,SeedSet_F,prob_map,pop_list,interest_list,assum_list,3,false,100000)
-
-
-	fmt.Println("strict_ans")
-	fmt.Println(strict_ans,strict_value,strict_value2)
-
-	fmt.Println("近似率")
-	fmt.Println(greedy_value2/strict_value2)
-
 
 	fmt.Println(S,hist)
 }
