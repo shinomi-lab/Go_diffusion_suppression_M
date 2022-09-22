@@ -1,13 +1,13 @@
 package main
 
 import (
+	"encoding/csv"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"log"
 	diff "m/difftools/diffusion"
 	opt "m/difftools/optimization"
-	"encoding/csv"
-	"log"
 	"os"
 	"strings"
 	//"time"
@@ -24,8 +24,6 @@ func sample1() {
 	pop_list[1] = diff.Pop_high
 
 	fmt.Println(n, seed, k_T, K_F, diff.InfoType_F, sample_size, pop_list)
-
-
 
 	bytes, err := ioutil.ReadFile("adj_json.txt")
 	if err != nil {
@@ -71,7 +69,6 @@ func sample1() {
 	//
 	// fmt.Println(prob_map)
 
-
 	//test part
 	var S []int
 	var hist [][]float64
@@ -103,29 +100,30 @@ func sample1() {
 
 	w := csv.NewWriter(f)
 
-	colmns := []string{"greedy_ans","strict_ans", "greedy_value", "greedy_value2", "strict_value", "strict_value2", "kinjiritu","random_seed"}
+	colmns := []string{"greedy_ans", "strict_ans", "greedy_value", "greedy_value2", "strict_value", "strict_value2", "kinjiritu", "random_seed"}
 	w.Write(colmns)
 
-
 	//start loop
-	sample_size = 100
+	sample_size = 1000
+	sample_size2 := 1000
 	var random_seed int64
 	random_seed = 0
 
-	for random_seed = 0;random_seed<10;random_seed++{
-		greedy_ans,greedy_value,greedy_value2 := opt.Greedy(random_seed, sample_size,adj,SeedSet_F,prob_map,pop_list,interest_list,assum_list,3,false,100000)
+	//選ばれうる0 1 2 6 8 15 18 20 37 48
+
+	for random_seed = 0; random_seed < 10; random_seed++ {
+		greedy_ans, greedy_value, greedy_value2 := opt.Greedy(random_seed, sample_size, adj, SeedSet_F, prob_map, pop_list, interest_list, assum_list, 3, false, sample_size2)
 
 		fmt.Println("greedy_ans")
-		fmt.Println(greedy_ans,greedy_value,greedy_value2)
+		fmt.Println(greedy_ans, greedy_value, greedy_value2)
 
-		strict_ans,strict_value,strict_value2 := opt.Strict(random_seed,sample_size,adj,SeedSet_F,prob_map,pop_list,interest_list,assum_list,3,false,100000)
-
+		strict_ans, strict_value, strict_value2 := opt.Strict(random_seed, sample_size, adj, SeedSet_F, prob_map, pop_list, interest_list, assum_list, 3, false, sample_size2)
 
 		fmt.Println("strict_ans")
-		fmt.Println(strict_ans,strict_value,strict_value2)
+		fmt.Println(strict_ans, strict_value, strict_value2)
 
 		fmt.Println("近似率")
-		fmt.Println(greedy_value2/strict_value2)
+		fmt.Println(greedy_value2 / strict_value2)
 
 		Sets_string := make([][]string, 2)
 		Sets_string[0] = opt.Int_to_String(greedy_ans)
@@ -133,7 +131,7 @@ func sample1() {
 
 		part0 := []string{strings.Join(Sets_string[0], "-"), strings.Join(Sets_string[1], "-")} //here
 
-		a := []float64{greedy_value, greedy_value2, strict_value, strict_value2, greedy_value2/strict_value2,float64(seed)}
+		a := []float64{greedy_value, greedy_value2, strict_value, strict_value2, greedy_value2 / strict_value2, float64(random_seed)}
 
 		part1 := opt.Float_to_String(a)
 
@@ -152,15 +150,15 @@ func sample1() {
 	//SeedSet_Greedy := make([]int,len(adj))
 	//SeedSet_Greedy[15] = 2
 
-	fmt.Println(S,hist)
+	fmt.Println(S, hist)
 }
 
-func sim_submod(adj [][]int, sample_size int, pop_list [2]int, interest_list [][]int, assum_list [][]int, SeedSet_F []int, k_T int, prob_map [2][2][2][2]float64)([]int, [][]float64){
+func sim_submod(adj [][]int, sample_size int, pop_list [2]int, interest_list [][]int, assum_list [][]int, SeedSet_F []int, k_T int, prob_map [2][2][2][2]float64) ([]int, [][]float64) {
 	var S []int
 	var hist [][]float64
-	S,hist = opt.Check_submod(1, k_T, sample_size, adj, SeedSet_F, prob_map, pop_list, interest_list, assum_list)
+	S, hist = opt.Check_submod(1, k_T, sample_size, adj, SeedSet_F, prob_map, pop_list, interest_list, assum_list)
 
-	return S,hist
+	return S, hist
 }
 
 func main() {
