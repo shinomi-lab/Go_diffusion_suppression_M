@@ -259,3 +259,10 @@ func BoolToInt(b bool) float64 {
 		return 0.0
 	}
 }
+
+func focus_loop(loop_n int, list1 []int, list2 []int, seed int64, adj [][]int, prob_map [2][2][2][2]float64, pop [2]int, interest_list [][]int, assum_list [][]int){
+	SetA := make([])
+	for i:=0;i<loop_n;i++{
+
+	}
+}
