@@ -9,6 +9,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"time"
 )
 
 func Check_submod(seed int64, k int, sample_size int, adj [][]int, SeedSet_F []int, prob_map [2][2][2][2]float64, pop [2]int, interest_list [][]int, assum_list [][]int) ([]int, [][]float64) {
@@ -32,7 +33,7 @@ func Check_submod(seed int64, k int, sample_size int, adj [][]int, SeedSet_F []i
 	loop := 40
 	// sets_len := len(sizes)*loop
 
-	mont_loop := 1000
+	mont_loop := 1
 	// mont_num := sample_size*mont_loop
 
 	temp := make([][13]float64, len(sizes)*loop)
@@ -135,6 +136,112 @@ func Check_submod(seed int64, k int, sample_size int, adj [][]int, SeedSet_F []i
 
 }
 
+func FocusLoop(loop_n int,list1 []int, list2 []int, SeedSet_F []int, seed int64, sample_size int, adj [][]int, prob_map [2][2][2][2]float64, pop [2]int, interest_list [][]int, assum_list [][]int){
+
+	rand.Seed(seed)
+
+	// now := time.Now()
+
+	n:=len(adj)
+	SetA := make([]int, n)
+	_ = copy(SetA, SeedSet_F)
+
+	for _,n := range list1{//多分appendSeedsetTでやれる
+		if SetA[n] == 1{
+			fmt.Println("ここはS_fのところです")
+		}else{
+			SetA[n] = 2
+		}
+	}
+
+	SetB := make([]int, n)
+	_ = copy(SetB, SeedSet_F)
+
+	for _,n := range list2{
+		if SetB[n] == 1{
+			fmt.Println("ここはS_fのところです")
+		}else{
+			SetB[n] = 2
+		}
+	}
+
+
+
+	var SetAandB []int
+	SetAandB = make([]int, n)
+	_ = copy(SetAandB, SeedSet_F)
+	append_seedset_T(SetAandB, Set_Multi(list1, list2))
+
+	var SetAorB []int
+	SetAorB = make([]int, n)
+	_ = copy(SetAorB, SeedSet_F)
+	append_seedset_T(SetAorB, Set_Sum(list1, list2))
+
+
+	Set_use := make([][]int, 4)
+	Set_use[0] = SetA
+	Set_use[1] = SetB
+	Set_use[2] = SetAandB
+	Set_use[3] = SetAorB
+
+	result := make([]float64, 4)
+
+	now := time.Now()
+  unix := now.Unix()
+  filename := strconv.FormatInt(unix, 10)+".csv"
+
+	f, err := os.Create(filename)
+	if err != nil {
+		log.Fatal(err)
+	}
+	w := csv.NewWriter(f)
+
+	colmns := []string{"K_T", "SetA", "SetB", "SetA_r", "SetB_r", "AandB_r", "AorB_r", "IsSubmodularity", "menos"}
+	w.Write(colmns)
+
+
+	for j:=0;j<loop_n;j++{
+		if(j%(loop_n/10)==0){
+			fmt.Println("abc")
+		}
+
+
+		for i, set := range Set_use {
+			dist := Infl_prop_exp(-1, sample_size, adj, set, prob_map, pop, interest_list, assum_list)
+			result[i] = dist[diff.InfoType_T]
+		}
+
+		Sets_string := make([][]string, 2)
+		Sets_string[0] = Int_to_String(list1)
+		Sets_string[1] = Int_to_String(list2)
+
+		part0 := []string{strings.Join(Sets_string[0], "-"), strings.Join(Sets_string[1], "-")}
+
+		a := []float64{result[0], result[1], result[2], result[3], BoolToInt(result[0]+result[1] >= result[2]+result[3]), (result[0] + result[1]) - (result[2] + result[3])}
+
+		part1 := Float_to_String(a)
+
+		retu := append(part0, part1...)
+
+		w.Write(retu)
+
+}
+
+
+	w.Flush()
+
+	if err := w.Error(); err != nil {
+		log.Fatal(err)
+	}
+}
+
+
+
+
+
+
+
+
 func Make_SeedSet_T(Su []int, k int, adj [][]int) []int {
 	n := len(Su)
 	var sets []int
@@ -225,7 +332,7 @@ func Float_to_String(slice []float64) []string {
 	l1 := len(slice)
 	ans := make([]string, l1)
 	for i := 0; i < l1; i++ {
-		ans[i] = strconv.FormatFloat(slice[i], 'f', 2, 64)
+		ans[i] = strconv.FormatFloat(slice[i], 'f', 5, 64)
 	}
 	return ans
 }
