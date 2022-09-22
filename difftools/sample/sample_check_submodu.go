@@ -111,34 +111,41 @@ func sample1() {
 
 	//選ばれうる0 1 2 6 8 15 18 20 37 48
 
-	for random_seed = 0; random_seed < 10; random_seed++ {
-		greedy_ans, greedy_value, greedy_value2 := opt.Greedy(random_seed, sample_size, adj, SeedSet_F, prob_map, pop_list, interest_list, assum_list, 3, false, sample_size2)
+	seedsetfs := []int{0,1,2,6,8,15,18,20,37,48}
+	for i:=0;i<10;i++{
+		SeedSet_Greedy := make([]int,len(adj))
+		SeedSet_Greedy[seedsetfs[i]] = 1
+		//偽情報の発信源を色々と
+		for random_seed = 0; random_seed < 10; random_seed++ {
+			greedy_ans, greedy_value, greedy_value2 := opt.Greedy(random_seed, sample_size, adj, SeedSet_F, prob_map, pop_list, interest_list, assum_list, 3, false, sample_size2)
 
-		fmt.Println("greedy_ans")
-		fmt.Println(greedy_ans, greedy_value, greedy_value2)
+			fmt.Println("greedy_ans")
+			fmt.Println(greedy_ans, greedy_value, greedy_value2)
 
-		strict_ans, strict_value, strict_value2 := opt.Strict(random_seed, sample_size, adj, SeedSet_F, prob_map, pop_list, interest_list, assum_list, 3, false, sample_size2)
+			strict_ans, strict_value, strict_value2 := opt.Strict(random_seed, sample_size, adj, SeedSet_F, prob_map, pop_list, interest_list, assum_list, 3, false, sample_size2)
 
-		fmt.Println("strict_ans")
-		fmt.Println(strict_ans, strict_value, strict_value2)
+			fmt.Println("strict_ans")
+			fmt.Println(strict_ans, strict_value, strict_value2)
 
-		fmt.Println("近似率")
-		fmt.Println(greedy_value2 / strict_value2)
+			fmt.Println("近似率")
+			fmt.Println(greedy_value2 / strict_value2)
 
-		Sets_string := make([][]string, 2)
-		Sets_string[0] = opt.Int_to_String(greedy_ans)
-		Sets_string[1] = opt.Int_to_String(strict_ans)
+			Sets_string := make([][]string, 2)
+			Sets_string[0] = opt.Int_to_String(greedy_ans)
+			Sets_string[1] = opt.Int_to_String(strict_ans)
 
-		part0 := []string{strings.Join(Sets_string[0], "-"), strings.Join(Sets_string[1], "-")} //here
+			part0 := []string{strings.Join(Sets_string[0], "-"), strings.Join(Sets_string[1], "-")} //here
 
-		a := []float64{greedy_value, greedy_value2, strict_value, strict_value2, greedy_value2 / strict_value2, float64(random_seed)}
+			a := []float64{greedy_value, greedy_value2, strict_value, strict_value2, greedy_value2 / strict_value2, float64(random_seed)}
 
-		part1 := opt.Float_to_String(a)
+			part1 := opt.Float_to_String(a)
 
-		retu := append(part0, part1...)
+			retu := append(part0, part1...)
 
-		w.Write(retu)
+			w.Write(retu)
+		}
 	}
+
 
 	//loop end
 
