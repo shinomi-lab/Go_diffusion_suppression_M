@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	diff "m/difftools/diffusion"
 	opt "m/difftools/optimization"
+	//"time"
 )
 
 func sample1() {
@@ -66,10 +67,49 @@ func sample1() {
 	//
 	// fmt.Println(prob_map)
 
+
+	//test part
 	var S []int
 	var hist [][]float64
+	//
+	// sample_size = 1000000
+	// S, hist = sim_submod(adj, sample_size,pop_list,interest_list,assum_list,SeedSet_F,k_T,prob_map)
 
-	S, hist = sim_submod(adj, sample_size,pop_list,interest_list,assum_list,SeedSet_F,k_T,prob_map)
+	// loop_n := 1000
+	// sample_size = 1000
+	// list1 := []int{0,6,8}
+	// list2 := []int{0,20}
+	// opt.FocusLoop(loop_n,list1,list2,SeedSet_F,1,sample_size,adj,prob_map,pop_list,interest_list,assum_list)
+	//
+	// time.Sleep(time.Second * 2)
+	// list1 = []int{20,48,2,8}
+	// list2 = []int{8,48,37,2}
+	// opt.FocusLoop(loop_n,list1,list2,SeedSet_F,1,sample_size,adj,prob_map,pop_list,interest_list,assum_list)
+	//
+	// time.Sleep(time.Second * 2)
+	// list1 = []int{20,15,6}
+	// list2 = []int{48,0,18}
+	// opt.FocusLoop(loop_n,list1,list2,SeedSet_F,1,sample_size,adj,prob_map,pop_list,interest_list,assum_list)
+
+	sample_size = 100
+	var random_seed int64
+	random_seed = 7
+	//SeedSet_Greedy := make([]int,len(adj))
+	//SeedSet_Greedy[15] = 2
+	greedy_ans,greedy_value,greedy_value2 := opt.Greedy(random_seed, sample_size,adj,SeedSet_F,prob_map,pop_list,interest_list,assum_list,3,false,100000)
+
+	fmt.Println("greedy_ans")
+	fmt.Println(greedy_ans,greedy_value,greedy_value2)
+
+	strict_ans,strict_value,strict_value2 := opt.Strict(random_seed,sample_size,adj,SeedSet_F,prob_map,pop_list,interest_list,assum_list,3,false,100000)
+
+
+	fmt.Println("strict_ans")
+	fmt.Println(strict_ans,strict_value,strict_value2)
+
+	fmt.Println("近似率")
+	fmt.Println(greedy_value2/strict_value2)
+
 
 	fmt.Println(S,hist)
 }
