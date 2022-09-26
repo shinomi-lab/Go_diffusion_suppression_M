@@ -11,6 +11,7 @@ var InfoTypes_n int = 2
 var Pop_low int = 0
 var Pop_high int = 1
 var Pops_n int = 2
+var Set []int
 
 // func make_Info(pop int) {
 // 	var a [InfoTypes_n][pops_n]int
@@ -25,7 +26,7 @@ func Make_seedSet_F(n int, k int, seed int64, adj [][]int) []int {
 	//n:ノード数,k:SeedSetFの個数
 	rand.Seed(seed)
 	Fs := make([]int, n)
-	Set := make([]int,0,n)//選ばれる可能性があるノードたち(出次数が1以上)
+	Set = make([]int,0,n)//選ばれる可能性があるノードたち(出次数が1以上)
 
 	for i:=0;i<n;i++{
 		for j:=0;j<n;j++{
