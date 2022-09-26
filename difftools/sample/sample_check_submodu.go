@@ -92,7 +92,7 @@ func sample1() {
 	// list2 = []int{48,0,18}
 	// opt.FocusLoop(loop_n,list1,list2,SeedSet_F,1,sample_size,adj,prob_map,pop_list,interest_list,assum_list)
 
-	filename := "GreedyAndStrict.csv"
+	filename := "GreedyAndStrict2.csv"
 	f, err := os.Create(filename)
 	if err != nil {
 		log.Fatal(err)
@@ -104,25 +104,25 @@ func sample1() {
 	w.Write(colmns)
 
 	//start loop
-	sample_size = 1000
-	sample_size2 := 1000
+	sample_size = 100
+	sample_size2 := 100
 	var random_seed int64
 	random_seed = 0
 
 	//選ばれうる0 1 2 6 8 15 18 20 37 48
 
-	seedsetfs := []int{0,1,2,6,8,15,18,20,37,48}
-	for i:=0;i<10;i++{
-		SeedSet_Greedy := make([]int,len(adj))
+	seedsetfs := []int{0, 1, 2, 6, 8, 15, 18, 20, 37, 48}
+	for i := 0; i < 10; i++ {
+		SeedSet_Greedy := make([]int, len(adj))
 		SeedSet_Greedy[seedsetfs[i]] = 1
 		//偽情報の発信源を色々と
 		for random_seed = 0; random_seed < 10; random_seed++ {
-			greedy_ans, greedy_value, greedy_value2 := opt.Greedy(random_seed, sample_size, adj, SeedSet_F, prob_map, pop_list, interest_list, assum_list, 3, false, sample_size2)
+			greedy_ans, greedy_value, greedy_value2 := opt.Greedy(random_seed, sample_size, adj, SeedSet_Greedy, prob_map, pop_list, interest_list, assum_list, 3, true, sample_size2)
 
 			fmt.Println("greedy_ans")
 			fmt.Println(greedy_ans, greedy_value, greedy_value2)
 
-			strict_ans, strict_value, strict_value2 := opt.Strict(random_seed, sample_size, adj, SeedSet_F, prob_map, pop_list, interest_list, assum_list, 3, false, sample_size2)
+			strict_ans, strict_value, strict_value2 := opt.Strict(random_seed, sample_size, adj, SeedSet_Greedy, prob_map, pop_list, interest_list, assum_list, 3, true, sample_size2)
 
 			fmt.Println("strict_ans")
 			fmt.Println(strict_ans, strict_value, strict_value2)
@@ -145,7 +145,6 @@ func sample1() {
 			w.Write(retu)
 		}
 	}
-
 
 	//loop end
 
