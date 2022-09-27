@@ -9,10 +9,10 @@ import (
 	"os"
 	"strconv"
 	"strings"
-	"time"
+	// "time"
 )
 
-func Check_submod(seed int64, k int, sample_size int, adj [][]int, SeedSet_F []int, prob_map [2][2][2][2]float64, pop [2]int, interest_list [][]int, assum_list [][]int) ([]int, [][]float64) {
+func Check_submod(seed int64, k int, sample_size int, adj [][]int, SeedSet_F []int, prob_map [2][2][2][2]float64, pop [2]int, interest_list [][]int, assum_list [][]int, folder_path string) ([]int, [][]float64) {
 
 	var n int = len(adj)
 	var S []int = make([]int, n)
@@ -44,7 +44,13 @@ func Check_submod(seed int64, k int, sample_size int, adj [][]int, SeedSet_F []i
 	rand.Seed(seed)
 
 	//create file
-	filename := "file1.csv"
+	new_folder_path := folder_path+"/Check_submod"
+	err := os.Mkdir(new_folder_path, os.ModePerm)
+	if err != nil {
+		fmt.Println("error create Check_submod")
+		log.Fatal(err)
+	}
+	filename := new_folder_path + "/random"+strconv.Itoa(sample_size)+".csv"
 	f, err := os.Create(filename)
 	if err != nil {
 		log.Fatal(err)
@@ -136,7 +142,7 @@ func Check_submod(seed int64, k int, sample_size int, adj [][]int, SeedSet_F []i
 
 }
 
-func FocusLoop(loop_n int,list1 []int, list2 []int, SeedSet_F []int, seed int64, sample_size int, adj [][]int, prob_map [2][2][2][2]float64, pop [2]int, interest_list [][]int, assum_list [][]int){
+func FocusLoop(loop_n int,list1 []int, list2 []int, SeedSet_F []int, seed int64, sample_size int, adj [][]int, prob_map [2][2][2][2]float64, pop [2]int, interest_list [][]int, assum_list [][]int, folder_path string){
 
 	rand.Seed(seed)
 
@@ -186,14 +192,14 @@ func FocusLoop(loop_n int,list1 []int, list2 []int, SeedSet_F []int, seed int64,
 
 	result := make([]float64, 4)
 
-	now := time.Now()
-  unix := now.Unix()
-  filename := strconv.FormatInt(unix, 10)+".csv"
+	
+	filename := folder_path + "/focus"+strings.Join(Int_to_String(list1), "-")+strings.Join(Int_to_String(list2), "-")+strconv.Itoa(sample_size)+"-"+strconv.Itoa(loop_n)+".csv"
 
 	f, err := os.Create(filename)
 	if err != nil {
 		log.Fatal(err)
 	}
+
 	w := csv.NewWriter(f)
 
 	colmns := []string{"K_T", "SetA", "SetB", "SetA_r", "SetB_r", "AandB_r", "AorB_r", "IsSubmodularity", "menos"}

@@ -124,24 +124,36 @@ func sample1() {
 	var S []int
 	var hist [][]float64
 	//
-	// sample_size = 1000000
-	// S, hist = sim_submod(adj, sample_size,pop_list,interest_list,assum_list,SeedSet_F,K_T,prob_map)
+	sample_size = 1000000
+	S, hist = sim_submod(adj, sample_size,pop_list,interest_list,assum_list,SeedSet_F,K_T,prob_map,folder_path)
 
-	// loop_n := 1000
-	// sample_size = 1000
-	// list1 := []int{0,6,8}
-	// list2 := []int{0,20}
-	// opt.FocusLoop(loop_n,list1,list2,SeedSet_F,1,sample_size,adj,prob_map,pop_list,interest_list,assum_list)
-	//
-	// time.Sleep(time.Second * 2)
-	// list1 = []int{20,48,2,8}
-	// list2 = []int{8,48,37,2}
-	// opt.FocusLoop(loop_n,list1,list2,SeedSet_F,1,sample_size,adj,prob_map,pop_list,interest_list,assum_list)
-	//
-	// time.Sleep(time.Second * 2)
-	// list1 = []int{20,15,6}
-	// list2 = []int{48,0,18}
-	// opt.FocusLoop(loop_n,list1,list2,SeedSet_F,1,sample_size,adj,prob_map,pop_list,interest_list,assum_list)
+	fmt.Println("End Check_submod")
+
+
+	new_folder_path := folder_path+"/FocusLoop"
+	err = os.Mkdir(new_folder_path, os.ModePerm)
+	if err != nil {
+		fmt.Println("error create FocusLoop")
+		log.Fatal(err)
+	}
+	//[0 1 2 6 8 15 18 20 21 22 28 32 33 37 48 49 61 67 76 93]
+	loop_n := 1000
+	sample_size = 1000
+	list1 := []int{0,6,8}
+	list2 := []int{0,20}
+	opt.FocusLoop(loop_n,list1,list2,SeedSet_F,1,sample_size,adj,prob_map,pop_list,interest_list,assum_list,new_folder_path)
+
+	time.Sleep(time.Second * 2)
+	list1 = []int{68,48,2,8}
+	list2 = []int{8,48,37,93}
+	opt.FocusLoop(loop_n,list1,list2,SeedSet_F,1,sample_size,adj,prob_map,pop_list,interest_list,assum_list,new_folder_path)
+
+	time.Sleep(time.Second * 2)
+	list1 = []int{20,15,6}
+	list2 = []int{48,0,18}
+	opt.FocusLoop(loop_n,list1,list2,SeedSet_F,1,sample_size,adj,prob_map,pop_list,interest_list,assum_list,new_folder_path)
+
+	fmt.Println("End FocusLoop")
 
 	filename := folder_path + "/GreedyAndStrict2.csv"
 	f, err2 := os.Create(filename)
@@ -156,8 +168,8 @@ func sample1() {
 	w.Write(colmns)
 
 	//start loop
-	sample_size = 100
-	sample_size2 := 100
+	sample_size = 1000
+	sample_size2 := 1000
 	var random_seed int64
 	random_seed = 0
 
@@ -166,6 +178,8 @@ func sample1() {
 	// seedsetfs := []int{0, 1, 2, 6, 8, 15, 18, 20, 37, 48}
 	var seedsetfs []int = make([]int, len(diff.Set))
 	_ = copy(seedsetfs,diff.Set)
+	// fmt.Println(seedsetfs)
+	// os.Exit(0)
 	fmt.Println((len(adj)))
 	for i := 0; i < 10; i++ {
 		SeedSet_Greedy := make([]int, len(adj))
@@ -215,10 +229,10 @@ func sample1() {
 	fmt.Println(S, hist)
 }
 
-func sim_submod(adj [][]int, sample_size int, pop_list [2]int, interest_list [][]int, assum_list [][]int, SeedSet_F []int, K_T int, prob_map [2][2][2][2]float64) ([]int, [][]float64) {
+func sim_submod(adj [][]int, sample_size int, pop_list [2]int, interest_list [][]int, assum_list [][]int, SeedSet_F []int, K_T int, prob_map [2][2][2][2]float64, folder_path string) ([]int, [][]float64) {
 	var S []int
 	var hist [][]float64
-	S, hist = opt.Check_submod(1, K_T, sample_size, adj, SeedSet_F, prob_map, pop_list, interest_list, assum_list)
+	S, hist = opt.Check_submod(1, K_T, sample_size, adj, SeedSet_F, prob_map, pop_list, interest_list, assum_list,folder_path)
 
 	return S, hist
 }
