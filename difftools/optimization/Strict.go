@@ -52,7 +52,7 @@ func Strict(seed int64, sample_size int , adj [][]int , Seed_set []int, prob_map
         }
         if (result > max){
           max = result
-          ans = []int{i, j, k}//いける？
+          ans = []int{diff.Set[i], diff.Set[j], diff.Set[k]}//いける？
         }
 
       }
