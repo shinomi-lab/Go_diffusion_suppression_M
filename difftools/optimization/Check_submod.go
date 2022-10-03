@@ -30,7 +30,7 @@ func Check_submod(seed int64, k int, sample_size int, adj [][]int, SeedSet_F []i
 	}
 
 	sizes := []int{3, 4, 5}
-	loop := 40
+	loop := 400
 	// sets_len := len(sizes)*loop
 
 	mont_loop := 1
@@ -44,13 +44,13 @@ func Check_submod(seed int64, k int, sample_size int, adj [][]int, SeedSet_F []i
 	rand.Seed(seed)
 
 	//create file
-	new_folder_path := folder_path+"/Check_submod"
+	new_folder_path := folder_path + "/Check_submod"
 	err := os.Mkdir(new_folder_path, os.ModePerm)
 	if err != nil {
 		fmt.Println("error create Check_submod")
 		log.Fatal(err)
 	}
-	filename := new_folder_path + "/random"+strconv.Itoa(sample_size)+".csv"
+	filename := new_folder_path + "/random" + strconv.Itoa(sample_size) + ".csv"
 	f, err := os.Create(filename)
 	if err != nil {
 		log.Fatal(err)
@@ -142,20 +142,20 @@ func Check_submod(seed int64, k int, sample_size int, adj [][]int, SeedSet_F []i
 
 }
 
-func FocusLoop(loop_n int,list1 []int, list2 []int, SeedSet_F []int, seed int64, sample_size int, adj [][]int, prob_map [2][2][2][2]float64, pop [2]int, interest_list [][]int, assum_list [][]int, folder_path string){
+func FocusLoop(loop_n int, list1 []int, list2 []int, SeedSet_F []int, seed int64, sample_size int, adj [][]int, prob_map [2][2][2][2]float64, pop [2]int, interest_list [][]int, assum_list [][]int, folder_path string) {
 
 	rand.Seed(seed)
 
 	// now := time.Now()
 
-	n:=len(adj)
+	n := len(adj)
 	SetA := make([]int, n)
 	_ = copy(SetA, SeedSet_F)
 
-	for _,n := range list1{//多分appendSeedsetTでやれる
-		if SetA[n] == 1{
+	for _, n := range list1 { //多分appendSeedsetTでやれる
+		if SetA[n] == 1 {
 			fmt.Println("ここはS_fのところです")
-		}else{
+		} else {
 			SetA[n] = 2
 		}
 	}
@@ -163,15 +163,13 @@ func FocusLoop(loop_n int,list1 []int, list2 []int, SeedSet_F []int, seed int64,
 	SetB := make([]int, n)
 	_ = copy(SetB, SeedSet_F)
 
-	for _,n := range list2{
-		if SetB[n] == 1{
+	for _, n := range list2 {
+		if SetB[n] == 1 {
 			fmt.Println("ここはS_fのところです")
-		}else{
+		} else {
 			SetB[n] = 2
 		}
 	}
-
-
 
 	var SetAandB []int
 	SetAandB = make([]int, n)
@@ -183,7 +181,6 @@ func FocusLoop(loop_n int,list1 []int, list2 []int, SeedSet_F []int, seed int64,
 	_ = copy(SetAorB, SeedSet_F)
 	append_seedset_T(SetAorB, Set_Sum(list1, list2))
 
-
 	Set_use := make([][]int, 4)
 	Set_use[0] = SetA
 	Set_use[1] = SetB
@@ -192,8 +189,7 @@ func FocusLoop(loop_n int,list1 []int, list2 []int, SeedSet_F []int, seed int64,
 
 	result := make([]float64, 4)
 
-	
-	filename := folder_path + "/focus"+strings.Join(Int_to_String(list1), "-")+strings.Join(Int_to_String(list2), "-")+strconv.Itoa(sample_size)+"-"+strconv.Itoa(loop_n)+".csv"
+	filename := folder_path + "/focus" + strings.Join(Int_to_String(list1), "-") + strings.Join(Int_to_String(list2), "-") + strconv.Itoa(sample_size) + "-" + strconv.Itoa(loop_n) + ".csv"
 
 	f, err := os.Create(filename)
 	if err != nil {
@@ -205,12 +201,10 @@ func FocusLoop(loop_n int,list1 []int, list2 []int, SeedSet_F []int, seed int64,
 	colmns := []string{"K_T", "SetA", "SetB", "SetA_r", "SetB_r", "AandB_r", "AorB_r", "IsSubmodularity", "menos"}
 	w.Write(colmns)
 
-
-	for j:=0;j<loop_n;j++{
-		if(j%(loop_n/10)==0){
+	for j := 0; j < loop_n; j++ {
+		if j%(loop_n/10) == 0 {
 			fmt.Println("abc")
 		}
-
 
 		for i, set := range Set_use {
 			dist := Infl_prop_exp(-1, sample_size, adj, set, prob_map, pop, interest_list, assum_list)
@@ -231,8 +225,7 @@ func FocusLoop(loop_n int,list1 []int, list2 []int, SeedSet_F []int, seed int64,
 
 		w.Write(retu)
 
-}
-
+	}
 
 	w.Flush()
 
@@ -240,13 +233,6 @@ func FocusLoop(loop_n int,list1 []int, list2 []int, SeedSet_F []int, seed int64,
 		log.Fatal(err)
 	}
 }
-
-
-
-
-
-
-
 
 func Make_SeedSet_T(Su []int, k int, adj [][]int) []int {
 	n := len(Su)
