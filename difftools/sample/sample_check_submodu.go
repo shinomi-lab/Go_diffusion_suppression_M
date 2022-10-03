@@ -29,17 +29,17 @@ type Parameter struct {
 }
 
 func sample1() {
-	var n int = 100
+	var n int = 1000
 	var seed int64 = 1
 	var K_F int = 5
 	var K_T int = 10
-	var sample_size int = 100
+	var sample_size int = 1000
 	var pop_list [2]int
 	pop_list[0] = diff.Pop_high
 	pop_list[1] = diff.Pop_high
 
 	fmt.Println(K_T, K_F, diff.InfoType_F, sample_size, pop_list)
-	adjFilePath := "adj_json100node.txt"
+	adjFilePath := "adj_json1000node.txt"
 	bytes, err := ioutil.ReadFile(adjFilePath)
 	if err != nil {
 		panic(err)
@@ -128,7 +128,7 @@ func sample1() {
 	// SeedSet_Greedy[1] = 1 //here
 	//偽情報の発信源を色々と
 
-	sample_size = 1000000
+	sample_size = 10000
 	S, hist = sim_submod(adj, sample_size, pop_list, interest_list, assum_list, SeedSet_F_strong, K_T, prob_map, folder_path)
 
 	fmt.Println("End Check_submod")
@@ -171,62 +171,62 @@ func sample1() {
 	w.Write(colmns)
 
 	//start loop
-	// sample_size = 1000
-	// sample_size2 := 1000
-	// var random_seed int64
-	// random_seed = 0
+	sample_size = 1000
+	sample_size2 := 1000
+	var random_seed int64
+	random_seed = 0
 
-	// //選ばれうる0 1 2 6 8 15 18 20 37 48
+	//選ばれうる0 1 2 6 8 15 18 20 37 48
 
-	// // seedsetfs := []int{0, 1, 2, 6, 8, 15, 18, 20, 37, 48}
+	seedsetfs := []int{0, 1, 2, 6}
 	// var seedsetfs []int = make([]int, len(diff.Set))
 	// _ = copy(seedsetfs, diff.Set)
-	// // fmt.Println(seedsetfs)
-	// // os.Exit(0)
-	// fmt.Println((len(adj)))
-	// for i := 0; i < 10; i++ {
-	// 	SeedSet_Greedy := make([]int, len(adj))
-	// 	SeedSet_Greedy[seedsetfs[i]] = 1 //here
-	// 	//偽情報の発信源を色々と
-	// 	for random_seed = 0; random_seed < 10; random_seed++ {
-	// 		greedy_ans, greedy_value, greedy_value2 := opt.Greedy(random_seed, sample_size, adj, SeedSet_Greedy, prob_map, pop_list, interest_list, assum_list, 3, true, sample_size2)
+	// fmt.Println(seedsetfs)
+	// os.Exit(0)
+	fmt.Println((len(adj)))
+	for i := 0; i < 2; i++ {
+		SeedSet_Greedy := make([]int, len(adj))
+		SeedSet_Greedy[seedsetfs[i]] = 1 //here
+		//偽情報の発信源を色々と
+		for random_seed = 0; random_seed < 10; random_seed++ {
+			greedy_ans, greedy_value, greedy_value2 := opt.Greedy(random_seed, sample_size, adj, SeedSet_Greedy, prob_map, pop_list, interest_list, assum_list, 3, true, sample_size2)
 
-	// 		fmt.Println("greedy_ans")
-	// 		fmt.Println(greedy_ans, greedy_value, greedy_value2)
+			fmt.Println("greedy_ans")
+			fmt.Println(greedy_ans, greedy_value, greedy_value2)
 
-	// 		strict_ans, strict_value, strict_value2 := opt.Strict(random_seed, sample_size, adj, SeedSet_Greedy, prob_map, pop_list, interest_list, assum_list, 3, true, sample_size2)
+			strict_ans, strict_value, strict_value2 := opt.Strict(random_seed, sample_size, adj, SeedSet_Greedy, prob_map, pop_list, interest_list, assum_list, 3, true, sample_size2)
 
-	// 		fmt.Println("strict_ans")
-	// 		fmt.Println(strict_ans, strict_value, strict_value2)
+			fmt.Println("strict_ans")
+			fmt.Println(strict_ans, strict_value, strict_value2)
 
-	// 		fmt.Println("近似率")
-	// 		fmt.Println(greedy_value2 / strict_value2)
+			fmt.Println("近似率")
+			fmt.Println(greedy_value2 / strict_value2)
 
-	// 		Sets_string := make([][]string, 2)
-	// 		Sets_string[0] = opt.Int_to_String(greedy_ans)
-	// 		Sets_string[1] = opt.Int_to_String(strict_ans)
+			Sets_string := make([][]string, 2)
+			Sets_string[0] = opt.Int_to_String(greedy_ans)
+			Sets_string[1] = opt.Int_to_String(strict_ans)
 
-	// 		part0 := []string{strings.Join(Sets_string[0], "-"), strings.Join(Sets_string[1], "-")} //here
+			part0 := []string{strings.Join(Sets_string[0], "-"), strings.Join(Sets_string[1], "-")} //here
 
-	// 		a := []float64{greedy_value, greedy_value2, strict_value, strict_value2, greedy_value2 / strict_value2, float64(random_seed)}
+			a := []float64{greedy_value, greedy_value2, strict_value, strict_value2, greedy_value2 / strict_value2, float64(random_seed)}
 
-	// 		part1 := opt.Float_to_String(a)
+			part1 := opt.Float_to_String(a)
 
-	// 		retu := append(part0, part1...)
+			retu := append(part0, part1...)
 
-	// 		w.Write(retu)
-	// 	}
-	// }
+			w.Write(retu)
+		}
+	}
 
-	// //loop end
+	//loop end
 
-	// w.Flush()
+	w.Flush()
 
-	// if err := w.Error(); err != nil {
-	// 	log.Fatal(err)
-	// }
-	// //SeedSet_Greedy := make([]int,len(adj))
-	// //SeedSet_Greedy[15] = 2
+	if err := w.Error(); err != nil {
+		log.Fatal(err)
+	}
+	//SeedSet_Greedy := make([]int,len(adj))
+	//SeedSet_Greedy[15] = 2
 
 	fmt.Println(S, hist)
 }
