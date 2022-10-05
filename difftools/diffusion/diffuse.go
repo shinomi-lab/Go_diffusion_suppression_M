@@ -45,6 +45,7 @@ func Adjmat(adj [][]int, SeedSet []int, seed int64, prob_map [2][2][2][2]float64
 
 				for j := 0; j < n; j++ {
 					if adj[s_node][j] == 0 || funcs.Set_Has(recieved_list[InfoType_F], j) || funcs.Set_Has(recieved_list[InfoType_T], j) || funcs.Set_Has(next[InfoType_F], j) || funcs.Set_Has(next[info], j) {
+						//道がないorすでに情報を受け取っているor次に偽の情報または同じ種類の情報を受け取ろうとしている
 						continue
 					}
 					if p == 1 || p > rand.Float64() {
