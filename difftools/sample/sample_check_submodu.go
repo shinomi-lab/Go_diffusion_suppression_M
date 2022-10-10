@@ -29,7 +29,7 @@ type Parameter struct {
 }
 
 func sample1() {
-	var n int = 1000
+	var n int = 5000
 	var seed int64 = 1
 	var K_F int = 5
 	var K_T int = 10
@@ -39,7 +39,7 @@ func sample1() {
 	pop_list[1] = diff.Pop_high
 
 	fmt.Println(K_T, K_F, diff.InfoType_F, sample_size, pop_list)
-	adjFilePath := "adj_json1000node.txt"
+	adjFilePath := "adj_json5000node.txt"
 	bytes, err := ioutil.ReadFile(adjFilePath)
 	if err != nil {
 		panic(err)
@@ -128,7 +128,7 @@ func sample1() {
 	// SeedSet_Greedy[1] = 1 //here
 	//偽情報の発信源を色々と
 
-	sample_size = 10000
+	sample_size = 1000
 	S, hist = sim_submod(adj, sample_size, pop_list, interest_list, assum_list, SeedSet_F_strong, K_T, prob_map, folder_path)
 
 	fmt.Println("End Check_submod")

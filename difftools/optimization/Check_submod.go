@@ -30,7 +30,7 @@ func Check_submod(seed int64, k int, sample_size int, adj [][]int, SeedSet_F []i
 	}
 
 	sizes := []int{3, 4, 5}
-	loop := 400
+	loop := 60
 	// sets_len := len(sizes)*loop
 
 	mont_loop := 1
