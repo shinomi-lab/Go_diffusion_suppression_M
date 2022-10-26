@@ -9,6 +9,7 @@ import (
 	diff "m/difftools/diffusion"
 	opt "m/difftools/optimization"
 	"os"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -29,7 +30,7 @@ type Parameter struct {
 }
 
 func sample1() {
-	var n int = 5000
+	var n int = 1000
 	var seed int64 = 1
 	var K_F int = 5
 	var K_T int = 10
@@ -39,7 +40,7 @@ func sample1() {
 	pop_list[1] = diff.Pop_high
 
 	fmt.Println(K_T, K_F, diff.InfoType_F, sample_size, pop_list)
-	adjFilePath := "adj_json5000node.txt"
+	adjFilePath := "adj_json1000node.txt"
 	bytes, err := ioutil.ReadFile(adjFilePath)
 	if err != nil {
 		panic(err)
@@ -109,7 +110,7 @@ func sample1() {
 	// }
 	const layout2 = "2006-01-02 15:04:05"
 	str := strings.Replace(time.Now().Format(layout2), ":", "-", -1)
-	folder_path := "result/" + str
+	folder_path := "result/" + strconv.Itoa(n) + "node" + str //here
 	err = os.Mkdir(folder_path, os.ModePerm)
 	if err != nil {
 		fmt.Println("error create" + folder_path)
@@ -127,11 +128,15 @@ func sample1() {
 	SeedSet_F_strong[0] = 1 //here
 	// SeedSet_Greedy[1] = 1 //here
 	//偽情報の発信源を色々と
+	// greedy_ans1, greedy_value1, greedy_value21 := opt.Greedy(1, 100, adj, SeedSet_F_strong, prob_map, pop_list, interest_list, assum_list, 3, true, 1000)
+	// fmt.Println(greedy_ans1, greedy_value1, greedy_value21)
+	// os.Exit(0)
 
-	sample_size = 1000
+	sample_size = 10000
 	S, hist = sim_submod(adj, sample_size, pop_list, interest_list, assum_list, SeedSet_F_strong, K_T, prob_map, folder_path)
 
 	fmt.Println("End Check_submod")
+	os.Exit(0)
 
 	// new_folder_path := folder_path + "/FocusLoop"
 	// err = os.Mkdir(new_folder_path, os.ModePerm)
