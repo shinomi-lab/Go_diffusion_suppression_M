@@ -5,13 +5,14 @@ import (
 	diff "m/difftools/diffusion"
 )
 
-func Greedy(seed int64, sample_size int, adj [][]int, Seed_set []int, prob_map [2][2][2][2]float64, pop [2]int, interest_list [][]int, assum_list [][]int, ans_len int, Count_true bool, sample_size2 int) ([]int, float64, float64) {
+func Greedy(seed int64, sample_size int, adj [][]int, Seed_set []int, prob_map [2][2][2][2]float64, pop [2]int, interest_list [][]int, assum_list [][]int, ans_len int, Count_true bool, sample_size2 int) ([]int, float64, []float64) {
 	//sample_size2はグリーディで求めた買いをより詳しくやる
 	var n int = len(adj)
 	var max float64 = 0
 	var result float64
 	var index int
 	var ans []int
+	var ans_v []float64
 
 	ans = make([]int, 0, ans_len)
 	S := make([]int, len(Seed_set))
@@ -54,16 +55,17 @@ func Greedy(seed int64, sample_size int, adj [][]int, Seed_set []int, prob_map [
 		} //subloop end
 
 		ans = append(ans, index)
+		ans_v = append(ans_v, max)
 		S[index] = info_num
 
 	} //mainloop end
 
-	var max_2 float64
-	dist2 := Infl_prop_exp(seed, sample_size2, adj, S, prob_map, pop, interest_list, assum_list)
-	if Count_true {
-		max_2 = dist2[diff.InfoType_T]
-	} else {
-		max_2 = dist2[diff.InfoType_F]
-	}
-	return ans, max, max_2
+	// var max_2 float64
+	// dist2 := Infl_prop_exp(seed, sample_size2, adj, S, prob_map, pop, interest_list, assum_list)
+	// if Count_true {
+	// 	max_2 = dist2[diff.InfoType_T]
+	// } else {
+	// 	max_2 = dist2[diff.InfoType_F]
+	// }
+	return ans, max, ans_v
 }

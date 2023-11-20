@@ -30,7 +30,7 @@ type Parameter struct {
 }
 
 func sample1() {
-	var n int = 1000
+	var n int = 100
 	var seed int64 = 1
 	var K_F int = 5
 	var K_T int = 10
@@ -40,7 +40,7 @@ func sample1() {
 	pop_list[1] = diff.Pop_high
 
 	fmt.Println(K_T, K_F, diff.InfoType_F, sample_size, pop_list)
-	adjFilePath := "adj_json1000node.txt"
+	adjFilePath := "adj_jsonTwitterInteractionUCongress.txt"
 	bytes, err := ioutil.ReadFile(adjFilePath)
 	if err != nil {
 		panic(err)
@@ -59,6 +59,7 @@ func sample1() {
 
 	var adj [][]int = make([][]int, n)
 
+	//make adj
 	for i := 0; i < n; i++ {
 		adj[i] = make([]int, n)
 		for j := 0; j < n; j++ {
@@ -80,6 +81,163 @@ func sample1() {
 
 	fmt.Println("Seedsetf")
 	fmt.Println(SeedSet_F)
+
+	SeedSet_F_strong2 := make([]int, len(adj))
+	SeedSet_F_strong2[0] = 1
+
+	// node_num := 5// it mean node num
+
+	//人数を流動的にして拡散を調べている
+		//	総フォロワー数を固定できていない
+	infler_num := 0
+	OnlyInfler := true
+	for j:=0;j<len(adj);j++{
+		for k:=0;k<len(adj);k++{
+			if(adj[j][k] != 0){
+				infler_num += 1
+				break
+			}
+		}
+	}
+	greedy_ans, _,greedy_ans_v := opt.Greedy(0,100,adj,SeedSet_F_strong2, prob_map,pop_list,interest_list,assum_list,infler_num,true,1000)
+
+	fmt.Println(greedy_ans)
+	fmt.Println(greedy_ans_v)
+
+	os.Exit(0)
+
+
+	kurikaesi := 100 //it mean loop num nearly sample_size
+
+	fmt.Println("infler_num:",infler_num)
+	ans3 := make([][]float64,0)
+	ans5 := make([][]int,0)
+
+	for i:=1;i<infler_num;i++{
+		_,ans2,ans4 := opt.RandomSuppression(adj, i, SeedSet_F_strong2,  prob_map, pop_list, interest_list, assum_list, kurikaesi,OnlyInfler)
+
+		ans3 = append(ans3,ans2...)
+		ans5 = append(ans5,ans4...)
+	//
+
+	file1, err := os.Create("Twitter_node_folower_supp"+strconv.Itoa(i)+"kurikasi"+strconv.Itoa(kurikaesi)+".csv")
+ if err != nil {
+		 panic(err)
+ }
+ defer file1.Close()
+
+ // Writerを作成
+ writer := csv.NewWriter(file1)
+
+ // データを書き込み
+ for _, row := range ans2 {
+		 stringRow := make([]string, len(row))
+		 for i, v := range row {
+				 stringRow[i] = strconv.FormatFloat(v, 'f', -1, 64)
+		 }
+		 writer.Write(stringRow)
+ }
+
+ // バッファに残っているデータを書き込み
+ writer.Flush()
+	}
+
+	file1, err := os.Create("Twitter_node_folower_supp_all"+"kurikasi"+strconv.Itoa(kurikaesi)+".csv")
+ if err != nil {
+		 panic(err)
+ }
+ defer file1.Close()
+
+ // Writerを作成
+ writer := csv.NewWriter(file1)
+
+ // データを書き込み
+ for _, row := range ans3 {
+		 stringRow := make([]string, len(row))
+		 for i, v := range row {
+				 stringRow[i] = strconv.FormatFloat(v, 'f', -1, 64)
+		 }
+		 writer.Write(stringRow)
+ }
+
+ // バッファに残っているデータを書き込み
+ writer.Flush()
+
+
+ file1, err = os.Create("Nodes_Twitter_node_folower_supp_all"+"kurikasi"+strconv.Itoa(kurikaesi)+".csv")
+if err != nil {
+		panic(err)
+}
+defer file1.Close()
+
+// Writerを作成
+writer = csv.NewWriter(file1)
+// データを書き込み
+for _, row := range ans5 {
+		stringRow := make([]string, len(row))
+		for i, v := range row {
+				stringRow[i] = strconv.Itoa(v)
+		}
+		writer.Write(stringRow)
+}
+
+// バッファに残っているデータを書き込み
+writer.Flush()
+	//
+	// opt.CallKumiawase(adj, 11,13, SeedSet_F_strong2)
+	os.Exit(0)
+
+	//なぜか同じ拡散力のやつで同じ拡散を調べている
+	for j:=0;j<50;j++{
+
+		selected_list := opt.CallKumiawase_Impression(adj , j, j+4, SeedSet_F_strong2, prob_map, pop_list, interest_list, assum_list)
+
+		opt.Selected_Suppression(adj, selected_list, SeedSet_F_strong2,  prob_map , pop_list, interest_list, assum_list)
+	}
+
+	node_num:=100
+	for i:=0;i<20;i++{
+		adjFilePath = "adj_json"+strconv.Itoa(node_num)+"node"+strconv.Itoa(i)+"seed.txt"
+		bytes, err = ioutil.ReadFile(adjFilePath)
+		if err != nil {
+			panic(err)
+		}
+
+		// fmt.Println(string(bytes))
+
+		dataJson = string(bytes)
+
+		arr = make(map[int]map[int]int)
+		// var arr []string
+		_ = json.Unmarshal([]byte(dataJson), &arr)
+		// fmt.Println(arr)
+
+		// fmt.Println(arr[0][1])
+
+		adj = make([][]int, n)
+
+		for i := 0; i < n; i++ {
+			adj[i] = make([]int, n)
+			for j := 0; j < n; j++ {
+				adj[i][j] = arr[j][i]
+			}
+		}
+
+
+
+		for j:=0;j<node_num-1;j++{
+
+			selected_list := opt.CallKumiawase_Impression(adj , j, j+4, SeedSet_F_strong2, prob_map, pop_list, interest_list, assum_list)
+			fmt.Print(j,":")
+
+			opt.Selected_Suppression(adj, selected_list, SeedSet_F_strong2,  prob_map , pop_list, interest_list, assum_list)
+		}
+		fmt.Println("-----------------------------------------")
+	}
+
+
+	os.Exit(0)
+
 
 	// fmt.Println((seq))
 	//
@@ -132,7 +290,7 @@ func sample1() {
 	// fmt.Println(greedy_ans1, greedy_value1, greedy_value21)
 	// os.Exit(0)
 
-	sample_size = 10000
+	sample_size = 1000000
 	S, hist = sim_submod(adj, sample_size, pop_list, interest_list, assum_list, SeedSet_F_strong, K_T, prob_map, folder_path)
 
 	fmt.Println("End Check_submod")
@@ -163,75 +321,75 @@ func sample1() {
 
 	// fmt.Println("End FocusLoop")
 
-	filename := folder_path + "/GreedyAndStrict2.csv"
-	f, err2 := os.Create(filename)
-	if err2 != nil {
-		fmt.Println("error create" + filename)
-		log.Fatal(err)
-	}
-
-	w := csv.NewWriter(f)
-
-	colmns := []string{"greedy_ans", "strict_ans", "greedy_value", "greedy_value2", "strict_value", "strict_value2", "kinjiritu", "random_seed"}
-	w.Write(colmns)
-
-	//start loop
-	sample_size = 1000
-	sample_size2 := 1000
-	var random_seed int64
-	random_seed = 0
-
-	//選ばれうる0 1 2 6 8 15 18 20 37 48
-
-	seedsetfs := []int{0, 1, 2, 6}
-	// var seedsetfs []int = make([]int, len(diff.Set))
-	// _ = copy(seedsetfs, diff.Set)
-	// fmt.Println(seedsetfs)
-	// os.Exit(0)
-	fmt.Println((len(adj)))
-	for i := 0; i < 2; i++ {
-		SeedSet_Greedy := make([]int, len(adj))
-		SeedSet_Greedy[seedsetfs[i]] = 1 //here
-		//偽情報の発信源を色々と
-		for random_seed = 0; random_seed < 10; random_seed++ {
-			greedy_ans, greedy_value, greedy_value2 := opt.Greedy(random_seed, sample_size, adj, SeedSet_Greedy, prob_map, pop_list, interest_list, assum_list, 3, true, sample_size2)
-
-			fmt.Println("greedy_ans")
-			fmt.Println(greedy_ans, greedy_value, greedy_value2)
-
-			strict_ans, strict_value, strict_value2 := opt.Strict(random_seed, sample_size, adj, SeedSet_Greedy, prob_map, pop_list, interest_list, assum_list, 3, true, sample_size2)
-
-			fmt.Println("strict_ans")
-			fmt.Println(strict_ans, strict_value, strict_value2)
-
-			fmt.Println("近似率")
-			fmt.Println(greedy_value2 / strict_value2)
-
-			Sets_string := make([][]string, 2)
-			Sets_string[0] = opt.Int_to_String(greedy_ans)
-			Sets_string[1] = opt.Int_to_String(strict_ans)
-
-			part0 := []string{strings.Join(Sets_string[0], "-"), strings.Join(Sets_string[1], "-")} //here
-
-			a := []float64{greedy_value, greedy_value2, strict_value, strict_value2, greedy_value2 / strict_value2, float64(random_seed)}
-
-			part1 := opt.Float_to_String(a)
-
-			retu := append(part0, part1...)
-
-			w.Write(retu)
-		}
-	}
-
-	//loop end
-
-	w.Flush()
-
-	if err := w.Error(); err != nil {
-		log.Fatal(err)
-	}
-	//SeedSet_Greedy := make([]int,len(adj))
-	//SeedSet_Greedy[15] = 2
+	// filename := folder_path + "/GreedyAndStrict2.csv"
+	// f, err2 := os.Create(filename)
+	// if err2 != nil {
+	// 	fmt.Println("error create" + filename)
+	// 	log.Fatal(err)
+	// }
+	//
+	// w := csv.NewWriter(f)
+	//
+	// colmns := []string{"greedy_ans", "strict_ans", "greedy_value", "greedy_value2", "strict_value", "strict_value2", "kinjiritu", "random_seed"}
+	// w.Write(colmns)
+	//
+	// //start loop
+	// sample_size = 1000
+	// sample_size2 := 1000
+	// var random_seed int64
+	// random_seed = 0
+	//
+	// //選ばれうる0 1 2 6 8 15 18 20 37 48
+	//
+	// seedsetfs := []int{0, 1, 2, 6}
+	// // var seedsetfs []int = make([]int, len(diff.Set))
+	// // _ = copy(seedsetfs, diff.Set)
+	// // fmt.Println(seedsetfs)
+	// // os.Exit(0)
+	// fmt.Println((len(adj)))
+	// for i := 0; i < 2; i++ {
+	// 	SeedSet_Greedy := make([]int, len(adj))
+	// 	SeedSet_Greedy[seedsetfs[i]] = 1 //here
+	// 	//偽情報の発信源を色々と
+	// 	for random_seed = 0; random_seed < 10; random_seed++ {
+	// 		greedy_ans, greedy_value, greedy_value2 := opt.Greedy(random_seed, sample_size, adj, SeedSet_Greedy, prob_map, pop_list, interest_list, assum_list, 3, true, sample_size2)
+	//
+	// 		fmt.Println("greedy_ans")
+	// 		fmt.Println(greedy_ans, greedy_value, greedy_value2)
+	//
+	// 		strict_ans, strict_value, strict_value2 := opt.Strict(random_seed, sample_size, adj, SeedSet_Greedy, prob_map, pop_list, interest_list, assum_list, 3, true, sample_size2)
+	//
+	// 		fmt.Println("strict_ans")
+	// 		fmt.Println(strict_ans, strict_value, strict_value2)
+	//
+	// 		fmt.Println("近似率")
+	// 		fmt.Println(greedy_value2 / strict_value2)
+	//
+	// 		Sets_string := make([][]string, 2)
+	// 		Sets_string[0] = opt.Int_to_String(greedy_ans)
+	// 		Sets_string[1] = opt.Int_to_String(strict_ans)
+	//
+	// 		part0 := []string{strings.Join(Sets_string[0], "-"), strings.Join(Sets_string[1], "-")} //here
+	//
+	// 		a := []float64{greedy_value, greedy_value2, strict_value, strict_value2, greedy_value2 / strict_value2, float64(random_seed)}
+	//
+	// 		part1 := opt.Float_to_String(a)
+	//
+	// 		retu := append(part0, part1...)
+	//
+	// 		w.Write(retu)
+	// 	}
+	// }
+	//
+	// //loop end
+	//
+	// w.Flush()
+	//
+	// if err := w.Error(); err != nil {
+	// 	log.Fatal(err)
+	// }
+	// //SeedSet_Greedy := make([]int,len(adj))
+	// //SeedSet_Greedy[15] = 2
 
 	fmt.Println(S, hist)
 }
@@ -245,5 +403,8 @@ func sim_submod(adj [][]int, sample_size int, pop_list [2]int, interest_list [][
 }
 
 func main() {
+	// sentaku := []int{0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15}
+	// now := []int{}
+
 	sample1()
 }

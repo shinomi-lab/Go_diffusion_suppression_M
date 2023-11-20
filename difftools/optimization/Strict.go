@@ -2,7 +2,9 @@ package optimization
 
 import(
   diff "m/difftools/diffusion"
-  // "fmt"
+  "fmt"
+  "math/rand"
+  "time"
 )
 
 func Strict(seed int64, sample_size int , adj [][]int , Seed_set []int, prob_map [2][2][2][2]float64, pop [2]int, interest_list [][]int, assum_list [][]int, ans_len int, Count_true bool,sample_size2 int)([]int,float64,float64){
@@ -74,4 +76,415 @@ func Strict(seed int64, sample_size int , adj [][]int , Seed_set []int, prob_map
   }
 
   return ans,max,max2
+}
+
+
+func Strict2(seed int64, sample_size int , adj [][]int , Seed_set []int, prob_map [2][2][2][2]float64, pop [2]int, interest_list [][]int, assum_list [][]int, ans_len int, Count_true bool,sample_size2 int, under int, upper int)([]int,float64,float64){
+  var n int = len(diff.Set)
+  var max float64 = 0
+  var result float64
+  var ans []int
+
+  ans = make([]int, 0, ans_len)
+  S := make([]int, len(Seed_set))
+  _ = copy(S,Seed_set)
+  S_test := make([]int ,len(Seed_set))
+  _ = copy(S_test, Seed_set)
+
+  var info_num int
+
+  if(Count_true){
+    info_num = 2
+  }else{
+    info_num = 1
+  }
+
+  for i:=0; i<n; i++{
+    if(S_test[diff.Set[i]] != 0){//すでに発信源のユーザだったら
+      continue
+    }
+    for j:=i;j<n;j++{
+      if(S_test[diff.Set[j]] != 0){//すでに発信源のユーザだったら
+        continue
+      }
+      for k:=j;k<n;k++{
+        if(S_test[diff.Set[k]] != 0){//すでに発信源のユーザだったら
+          continue
+        }
+        //main loop
+        _ = copy(S_test,S)
+        S_test[diff.Set[i]] = info_num
+        S_test[diff.Set[j]] = info_num
+        S_test[diff.Set[k]] = info_num
+        //complete set Seedsets
+
+        dist := Infl_prop_exp(seed, sample_size, adj, S_test, prob_map, pop, interest_list, assum_list)
+        if (Count_true){
+          result = dist[diff.InfoType_T]
+        }else{
+          result = dist[diff.InfoType_F]
+        }
+        if (result > max){
+          max = result
+          ans = []int{diff.Set[i], diff.Set[j], diff.Set[k]}//いける？
+        }
+
+      }
+    }
+  }//mainloop end
+  _ = copy(S_test,S)
+  for i:=0;i<len(ans);i++{
+    S_test[ans[i]] = info_num
+  }
+
+  //complete set Seedsets
+
+  var max2 float64
+  dist2 := Infl_prop_exp(seed, sample_size2, adj, S_test, prob_map, pop, interest_list, assum_list)
+  if (Count_true){
+    max2 = dist2[diff.InfoType_T]
+  }else{
+    max2 = dist2[diff.InfoType_F]
+  }
+
+  return ans,max,max2
+}
+
+var aaa [][]int
+var saiki int
+
+
+
+func CountFolower(a int)int{
+  return 3
+}
+
+//[0,1,1,0,1]→[1,2,4]に型変換して代入
+func printCombination(pattern []int,elems []int, n int) {
+  oneOf := make([]int,0)
+  for i := 0; i < n; i++{
+    //同じのを複数個選べるようにfor文になっている(pattern[i] = 1だったら追加)
+    for j := 0; j < pattern[i]; j++{
+          oneOf = append(oneOf,elems[i])
+    }
+  }
+  aaa = append(aaa,oneOf)
+}
+
+
+/* n個の要素からr個の要素を選ぶ場合の全パターンを列挙する */
+func combination(adj [][]int,pattern []int, elems []int,n int,undder int,upper int, num_decided int, OnlyInfler bool) {
+
+    num_selected := getNumSelected(adj, pattern, num_decided, elems);
+
+    if (num_decided == n) {
+        /* n個全ての要素に対して"選ぶ"or"選ばない"が決定ずみ */
+        if (num_selected <= upper && num_selected >undder) {
+            /* r個だけ選ばれている場合のみ、選ばれた要素を表示 */
+            printCombination(pattern, elems, n);
+        }
+        return;
+    }
+
+    /* num_decided個目の要素を"選ばない"場合のパターンを作成 */
+    pattern[num_decided] = 0;
+    combination(adj, pattern, elems, n, undder, upper, num_decided + 1,OnlyInfler);
+
+    /* num_decided個目の要素を"選ぶ"場合のパターンを作成 */
+    if(OnlyInfler){
+      adj_len := len(adj)
+      f_num := 0
+      for i:=0;i<adj_len;i++{
+        f_num += adj[num_decided][i]
+      }
+      if(f_num > 0){
+        pattern[num_decided] = 1;
+        combination(adj, pattern, elems, n, undder, upper, num_decided + 1,OnlyInfler);
+      }
+    }else{
+      pattern[num_decided] = 1;
+      combination(adj, pattern, elems, n, undder, upper, num_decided + 1,OnlyInfler);
+
+    }
+}
+
+func SameImporession(adj [][]int,pattern []int, elems []int,n int,undder int,upper int, num_decided int, SeedSet []int, prob_map [2][2][2][2]float64, pop [2]int, interest_list [][]int, assum_list [][]int) {
+
+    num_selected := getNumSelected_SameImpression(adj, pattern, num_decided, elems, SeedSet, prob_map,pop, interest_list, assum_list);
+
+    if (num_decided == n) {
+        /* n個全ての要素に対して"選ぶ"or"選ばない"が決定ずみ */
+        if (num_selected <= float64(upper) && num_selected >float64(undder)) {
+            /* r個だけ選ばれている場合のみ、選ばれた要素を表示 */
+            printCombination(pattern, elems, n);
+        }
+        return;
+    }
+
+    /* num_decided個目の要素を"選ばない"場合のパターンを作成 */
+    pattern[num_decided] = 0;
+    SameImporession(adj, pattern, elems, n, undder, upper, num_decided + 1,  SeedSet, prob_map,pop, interest_list, assum_list);
+
+    /* num_decided個目の要素を"選ぶ"場合のパターンを作成 */
+    infler_num:=0
+    for i:=0;i<len(adj);i++{
+      if(adj[num_decided][i]!=0){
+        infler_num = 1
+        break
+      }
+    }
+    if(infler_num != 0){
+      pattern[num_decided] = 1;
+      SameImporession(adj, pattern, elems, n, undder, upper, num_decided + 1,  SeedSet, prob_map,pop, interest_list, assum_list);
+
+    }
+}
+
+func getNumSelected(adj [][]int, pattern []int,n int,elems []int)int {
+  /* "選ぶ"と決定された要素の数を計算 */
+  // printf("pattern\t");
+  num_selected := 0;
+  for i := 0; i < n; i++ {
+    if(pattern[i]==1){
+      num_selected += FolowerSize(adj, elems[i]);
+    }
+  }
+  return num_selected;
+}
+
+func getNumSelected_SameImpression(adj [][]int, pattern []int,n int,elems []int, SeedSet []int, prob_map [2][2][2][2]float64, pop [2]int, interest_list [][]int, assum_list [][]int,)float64 {
+  /* "選ぶ"と決定された要素の数を計算 */
+  // printf("pattern\t");
+
+
+  S_test := make([]int ,len(SeedSet))
+  _ = copy(S_test, SeedSet)
+
+  for i := 0; i < len(SeedSet); i++{
+    if(pattern[i] == 1){
+      S_test[i] = 2 //true = 2
+    }
+  }
+
+
+  dist2 := Infl_prop_exp(0, 100, adj, S_test, prob_map, pop, interest_list, assum_list)//後で直す
+
+  ans := dist2[diff.InfoType_T]
+
+  return ans;
+}
+
+func FolowerSize(adj [][]int,node int)int{
+  ans := 0
+  for i:=0;i<len(adj);i++{
+    if (adj[node][i] != 0){
+      ans = ans + 1
+    }
+  }
+    if(ans ==0){
+      ans = 100000
+    }
+    return ans
+}
+
+
+// func ImpressionSize(adj [][]int,node int, SeedSet []int, prob_map [2][2][2][2]float64, pop [2]int, interest_list [][]int, assum_list [][]int)int{
+//   ans := 0
+//
+//   S_test := make([]int ,len(Seed_set))
+//   _ = copy(S_test, Seed_set)
+//
+//   dist2 := Infl_prop_exp(0, 1000, adj, S_F, prob_map, pop, interest_list, assum_list)
+//
+//   ans = dist2[diff.InfoType_T]
+//
+//   return ans
+// }
+
+func CallKumiawase(adj [][]int,under int, upper int, SeedSet []int, OnlyInfler bool)[][]int {
+    // fmt.Println("calling CallKumiawase")
+    //nを指定することで選べるユーザ数の上限を決めれる
+    n := len(adj)
+    var a int
+    k := 0
+    // n = 5
+    //情報の発信源となりうる(出次数0を消す)ユーザをまとめる　a
+    //型は[0,2,4,6,7]って感じ
+    elems := make([]int,n)
+    for i:=0;i<n;i++{
+      a = 0
+      if SeedSet[i] == 1{
+        continue
+      }
+      for j:=0;j<len(adj);j++{
+        if (adj[i][j] != 0){
+          a = a + 1
+        }
+      }
+      if(a != 0){
+        elems[k] = i
+        k = k + 1
+      }
+    }
+    //a End
+    pattern := make([]int,n)
+    saiki = 0
+    combination(adj, pattern, elems, k, under, upper, 0, OnlyInfler);
+    // fmt.Println("most important", aaa)
+    return aaa
+}
+
+func CallKumiawase_Impression(adj [][]int,under int, upper int, SeedSet []int,  prob_map [2][2][2][2]float64, pop [2]int, interest_list [][]int, assum_list [][]int)[][]int {
+    aaa = make([][]int,0)
+    // fmt.Println("calling CallKumiawase")
+    n := len(adj)
+    var a int
+    k := 0
+    // n = 5
+    elems := make([]int,n)
+    for i:=0;i<n;i++{
+      if SeedSet[i] == 1{
+        continue
+      }
+      a = 0
+      for j:=0;j<len(adj);j++{
+        if (adj[i][j] != 0){
+          a = a + 1
+        }
+      }
+      if(a != 0){
+        elems[k] = i
+        k = k + 1
+      }
+    }
+
+    pattern := make([]int,n)
+    saiki = 0
+
+    SameImporession(adj, pattern, elems, k, under, upper, 0, SeedSet, prob_map,pop, interest_list, assum_list);
+    // fmt.Println("most important", aaa)
+    return aaa
+}
+
+func RandomSuppression(adj [][]int, node_num int, SeedSet []int,  prob_map [2][2][2][2]float64, pop [2]int, interest_list [][]int, assum_list [][]int, kurikaesi int, OnlyInfler bool)(float64,[][]float64,[][]int){
+  var ans float64
+  var ans2 [][]float64
+  var ans3 [][]int
+
+  ans2 = make([][]float64,0)
+  ans3 = make([][]int,0)
+  ans = 0
+  var num int
+
+  S_test := make([]int ,len(SeedSet))
+  _ = copy(S_test, SeedSet)
+
+
+  for z := 0; z < kurikaesi; z++{
+    ans2_v := make([]float64,4)
+    ans3_v := make([]int,0)
+    S_test := make([]int ,len(SeedSet))
+    _ = copy(S_test, SeedSet)
+    for i := 0; i < node_num; i++ {
+      rand.Seed(time.Now().UnixNano())
+      num = rand.Intn(len(SeedSet))
+      if(S_test[num] != 0){
+        i = i - 1
+
+      }else if(OnlyInfler){
+        adj_len := len(adj)
+        f_num := 0
+        for i:=0;i<adj_len;i++{
+          f_num += adj[num][i]
+        }
+        if(f_num > 0){
+          S_test[num] = 2
+          ans3_v = append(ans3_v,num)
+          // fmt.Println("selected is ",num)
+        }else{
+          i = i - 1
+        }
+
+      }else{
+        S_test[num] = 2
+        ans3_v = append(ans3_v,num)
+      }
+    }
+    sum := 0
+    for _, x := range S_test {
+	     sum += x
+    }
+    sum = (sum-1)/2
+
+    dist := Infl_prop_exp(0, 1000, adj, S_test, prob_map, pop, interest_list, assum_list)
+    ans2_v[0] = float64(node_num)
+    ans2_v[1] = float64(CalFolower(adj,S_test))
+    ans2_v[2] = dist[diff.InfoType_T]
+    ans2_v[3] = dist[diff.InfoType_F]
+
+    // fmt.Println("ans2_v",ans2_v[0],ans2_v[1],ans2_v[2])
+    ans  += dist[diff.InfoType_T]
+
+    ans2 = append(ans2,ans2_v)
+    ans3 = append(ans3,ans3_v)
+     // ans += dist[diff.InfoType_T] - sum   //発信者自信を含まない拡散を出力
+  }
+
+
+  // fmt.Println("RandomSuppression return:",ans / float64(kurikaesi))
+  fmt.Println(node_num,":",ans/float64(kurikaesi))
+  return ans / float64(kurikaesi),ans2,ans3
+
+}
+
+func Selected_Suppression(adj [][]int, selected_list [][]int, SeedSet []int,  prob_map [2][2][2][2]float64, pop [2]int, interest_list [][]int, assum_list [][]int)float64{
+  var ans float64
+  ans = 0
+
+
+  for i:=0;i<len(selected_list);i++{
+    S_test := make([]int ,len(SeedSet))
+    _ = copy(S_test, SeedSet)
+    selected:=selected_list[i]
+    for j:=0;j<len(selected);j++{
+      node:=selected[j]
+      if S_test[node] != 0{
+        fmt.Println("ERROR in Selected_Suppression")
+      }
+      S_test[node] = 2
+    }
+    dist := Infl_prop_exp(0, 1000, adj, S_test, prob_map, pop, interest_list, assum_list)
+
+    ans  += dist[diff.InfoType_T]
+  }
+  // for selected := range selected_list{
+  //   for node := range selected{
+  //     if S_test[node] != 0{
+  //       fmt.Println("ERROR in Selected_Suppression")
+  //     }
+  //     S_test[num] = 2
+  //   }
+  //   dist := Infl_prop_exp(0, 1000, adj, S_test, prob_map, pop, interest_list, assum_list)
+  //
+  //   ans  += dist[diff.InfoType_T]
+  // }
+  if(len(selected_list)==0){
+    fmt.Println("selected_list is zero")
+    return 0.0
+  }else{
+    // fmt.Println("Selected Suppression return:",ans / float64(len(selected_list)))
+    fmt.Println(":",ans / float64(len(selected_list)))
+    return ans / float64(len(selected_list))
+  }
+}
+
+func CalFolower(adj [][]int, nodes []int)int{
+  ans := 0
+  for node,v := range nodes{
+    if(v == 2){
+      ans += FolowerSize(adj,node)
+    }
+  }
+
+  return ans
 }
