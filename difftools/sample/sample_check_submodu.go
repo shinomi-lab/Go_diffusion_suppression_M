@@ -12,6 +12,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"math/rand"
+	// "reflect"
 )
 
 type Parameter struct {
@@ -29,6 +31,274 @@ type Parameter struct {
 	Assum_list       [][]int
 }
 
+func make_adj_interest_assum(adjFilePath string, seed int64)([][]int,[][]int,[][]int){
+	bytes, err := ioutil.ReadFile(adjFilePath)
+	if err != nil {
+		panic(err)
+	}
+
+	// fmt.Println(string(bytes))
+
+	var dataJson string = string(bytes)
+
+	arr := make(map[int]map[int]int)
+	// var arr []string
+	_ = json.Unmarshal([]byte(dataJson), &arr)
+	// fmt.Println(arr)
+
+	// fmt.Println(arr[0][1])
+
+	n := len(arr)
+
+	var interest_list [][]int = diff.Make_interest_list(n, seed)
+
+	var assum_list [][]int = diff.Make_assum_list(n, seed)
+	var adj [][]int = make([][]int, n)
+
+	for i := 0; i < n; i++ {
+		adj[i] = make([]int, n)
+		for j := 0; j < n; j++ {
+			adj[i][j] = arr[j][i]
+		}
+	}
+	return adj,interest_list,assum_list
+}
+
+func use_strict(adj [][]int, interest_list [][]int,assum_list [][]int, user_weight float64)([][]int, [][]int, []int, [2][2][2][2]float64, [2]int, [][]int, [][]int){
+
+
+			// var n int = 50
+			// var seed int64 = 1
+			// var K_F int = 5
+			// var K_T int = 10
+			// var sample_size int = 1000
+			var pop_list [2]int
+			pop_list[0] = diff.Pop_high
+			pop_list[1] = diff.Pop_high
+
+			// fmt.Println(K_T, K_F, diff.InfoType_F, sample_size, pop_list)
+			// adjFilePath := "adj_jsonTwitterInteractionUCongress.txt"
+			// adjFilePath := "Graphs/adj_json1000node.txt"
+			// result_Path := "Twitter_Data/"
+
+
+			// var SeedSet_F []int = diff.Make_seedSet_F(n, 1, seed, adj)
+
+			// var interest_list [][]int = diff.Make_interest_list(n, seed)
+			//
+			// var assum_list [][]int = diff.Make_assum_list(n, seed)
+
+			var seq [16]float64 = diff.Make_probability()
+
+			var prob_map [2][2][2][2]float64 = diff.Map_probagbility(seq)
+
+			// fmt.Println("Seedsetf")
+			// fmt.Println(SeedSet_F)
+			//
+			// fmt.Println("prob_map")
+			// fmt.Println(prob_map)
+
+			SeedSet_F_strong2 := make([]int, len(adj))
+			max_user := 0 //最もフォロワ数が多いユーザ名
+			max_user_num := 0
+			user_num_counter := 0
+			for i:=0; i<len(adj); i++{
+				user_num_counter = 0
+				for j:=0; j<len(adj); j++{
+					if(adj[i][j] == 1){
+						user_num_counter ++
+					}
+				}
+				if(max_user_num < user_num_counter){
+					max_user = i
+					max_user_num = user_num_counter
+				}
+			}
+			SeedSet_F_strong2[max_user] = 1
+
+
+
+			//人数を流動的にして拡散を調べている
+				//	総フォロワー数を固定できていない
+			//拡散可能な人数を調べている
+			infler_num := 0
+			// OnlyInfler := true
+			for j:=0;j<len(adj);j++{
+				for k:=0;k<len(adj);k++{
+					if(adj[j][k] != 0){
+						infler_num += 1
+						break
+					}
+				}
+			}
+
+			fmt.Println("start_strict")
+			// slice_test := [][]int{{1, 15, 18}, {1, 15, 18},{1, 15, 18},{1, 15, 18},{1, 15, 18}}
+			// opt.Selected_Suppression_Maximum(adj,slice_test,SeedSet_F_strong2,  prob_map , pop_list, interest_list, assum_list)
+			// os.Exit(0)
+			s := time.Now()
+			under := 0.0
+			upper := 2.0
+			selected_list := opt.CallKumiawase2(adj, under, upper, SeedSet_F_strong2, true, max_user, user_weight)
+
+			// fmt.Println("end all kumiawase",selected_list)
+			cost_sum := 0.0
+			for k:=0;k<len(selected_list);k++{
+				selecte := selected_list[k]
+				cost_sum = 0
+				for l:=0;l<len(selecte);l++{
+					cost_sum += opt.Cal_cost(user_weight,1.0-user_weight,adj, selecte[l], max_user)
+				}
+				if(cost_sum < under || cost_sum >upper){
+					fmt.Println("えらーcost_sum:",cost_sum)
+				}
+
+			}
+			// os.Exit(0)
+			strict_ans,strict_ans_v := opt.Selected_Suppression_Maximum(adj, selected_list, SeedSet_F_strong2,  prob_map , pop_list, interest_list, assum_list)
+
+			fmt.Println("strict_time",time.Since(s))
+			cost_sum = 0
+			for j:=0;j<len(strict_ans);j++{
+				cost_sum += opt.Cal_cost(0.5,0.5,adj, strict_ans[j], max_user)
+			}
+
+			fmt.Println(strict_ans)
+			fmt.Println(strict_ans_v)
+			fmt.Println("cost_sum:",cost_sum)
+
+
+			return adj, selected_list, SeedSet_F_strong2,  prob_map , pop_list, interest_list, assum_list
+}
+
+func use_greedy(adj [][]int, interest_list [][]int,assum_list [][]int, user_weight float64)([][]int, [][]int, []int, [2][2][2][2]float64, [2]int, [][]int, [][]int){
+
+		// var n int = 50
+		// var seesd int64 = 1
+		// var K_F int = 5
+		// var K_T int = 10
+		// var sample_size int = 1000
+		var pop_list [2]int
+		pop_list[0] = diff.Pop_high
+		pop_list[1] = diff.Pop_high
+
+
+
+
+		// fmt.Println(string(bytes))
+
+
+
+
+
+
+		fmt.Println("--------------------")
+
+		// var SeedSet_F []int = diff.Make_seedSet_F(n, 1, seed, adj)
+
+		// var interest_list [][]int = diff.Make_interest_list(n, seed)
+		//
+		// var assum_list [][]int = diff.Make_assum_list(n, seed)
+
+		var seq [16]float64 = diff.Make_probability()
+
+		var prob_map [2][2][2][2]float64 = diff.Map_probagbility(seq)
+
+		// fmt.Println("Seedsetf")
+		// fmt.Println(SeedSet_F)
+		//
+		// fmt.Println("prob_map")
+		// fmt.Println(prob_map)
+
+		SeedSet_F_strong2 := make([]int, len(adj))
+		max_user := 0 //最もフォロワ数が多いユーザ名
+		max_user_num := 0
+		user_num_counter := 0
+		for i:=0; i<len(adj); i++{
+			user_num_counter = 0
+			for j:=0; j<len(adj); j++{
+				if(adj[i][j] == 1){
+					user_num_counter ++
+				}
+			}
+			if(max_user_num < user_num_counter){
+				max_user = i
+				max_user_num = user_num_counter
+			}
+		}
+		SeedSet_F_strong2[max_user] = 1
+
+
+
+		//人数を流動的にして拡散を調べている
+			//	総フォロワー数を固定できていない
+		//拡散可能な人数を調べている
+		infler_num := 0
+		// OnlyInfler := true
+		for j:=0;j<len(adj);j++{
+			for k:=0;k<len(adj);k++{
+				if(adj[j][k] != 0){
+					infler_num += 1
+					break
+				}
+			}
+		}
+
+		fmt.Println("start_greedy")
+		s := time.Now()
+		greedy_ans, _ := opt.Greedy_exp(0,100,adj,SeedSet_F_strong2, prob_map,pop_list,interest_list,assum_list,infler_num,true,3,max_user,true, user_weight)
+		fmt.Println("greedy_time:",time.Since(s))
+		cost_sum := 0.0
+		for j:=0;j<len(greedy_ans);j++{
+			cost_sum += opt.Cal_cost(user_weight,1-user_weight,adj, greedy_ans[j], max_user)
+		}
+		test_greedy_ans := make([][]int,1)
+		test_greedy_ans[0] = greedy_ans
+
+		_,test_greedy_ans_v := opt.Selected_Suppression_Maximum(adj,test_greedy_ans, SeedSet_F_strong2,  prob_map , pop_list, interest_list, assum_list)
+
+		fmt.Println(greedy_ans)
+		// fmt.Println(greedy_ans_v)
+		fmt.Println(test_greedy_ans_v)
+		fmt.Println("cost_sum:",cost_sum)
+
+		return adj,test_greedy_ans, SeedSet_F_strong2,  prob_map , pop_list, interest_list, assum_list
+}
+
+func cal_max_users(adj [][]int, n int){
+	// max_user := 0 //最もフォロワ数が多いユーザ名
+	m := n-1
+	max_users := make([]int,n)
+	// max_user_num := 0
+	user_num_counter := 0
+	max_user_nums := make([]int,n)
+	for i:=0; i<len(adj); i++{
+		user_num_counter = 0
+		for l:=0; l<len(adj); l++{
+			if(adj[i][l] == 1){
+				user_num_counter ++
+			}
+		}
+
+		for j:=0;j<n;j++{
+      if(max_user_nums[j] < user_num_counter){
+
+        for k:=j;k<m;k++{
+          max_users[m-k+j] = max_users[m-k+j-1]
+          max_user_nums[m-k+j] = max_user_nums[m-k+j-1]
+          // fmt.Println(i,max_user_nums)
+        }
+        max_users[j] = i
+        max_user_nums[j] = user_num_counter
+        // fmt.Println(i,max_user_nums)
+
+        break
+      }
+  	}
+	}
+	fmt.Println(max_users, max_user_nums)
+}
+
 func sample1() {
 	var n int = 100
 	var seed int64 = 1
@@ -41,6 +311,7 @@ func sample1() {
 
 	fmt.Println(K_T, K_F, diff.InfoType_F, sample_size, pop_list)
 	adjFilePath := "adj_jsonTwitterInteractionUCongress.txt"
+	result_Path := "Twitter_Data/"
 	bytes, err := ioutil.ReadFile(adjFilePath)
 	if err != nil {
 		panic(err)
@@ -67,7 +338,8 @@ func sample1() {
 		}
 	}
 
-	// fmt.Println(adj)
+	fmt.Println(adj)
+	fmt.Println("--------------------")
 
 	var SeedSet_F []int = diff.Make_seedSet_F(n, 1, seed, adj)
 
@@ -82,13 +354,27 @@ func sample1() {
 	fmt.Println("Seedsetf")
 	fmt.Println(SeedSet_F)
 
+	fmt.Println("prob_map")
+	fmt.Println(prob_map)
+
 	SeedSet_F_strong2 := make([]int, len(adj))
 	SeedSet_F_strong2[0] = 1
 
+	//pythonのやつと実行結果が違う理由を確かめるために使った部分
+	// python_ans,python_node_list := opt.PythonSuppression(adj, SeedSet_F_strong2,  prob_map, pop_list, interest_list, assum_list, true)
+	//
+	// fmt.Println(python_node_list)
+	//
+	// for i:=0;i<len(python_ans);i++{
+	// 	fmt.Println(python_ans[i])
+	// }
+
+	// os.Exit(0)
 	// node_num := 5// it mean node num
 
 	//人数を流動的にして拡散を調べている
 		//	総フォロワー数を固定できていない
+	//拡散可能な人数を調べている
 	infler_num := 0
 	OnlyInfler := true
 	for j:=0;j<len(adj);j++{
@@ -110,17 +396,18 @@ func sample1() {
 	kurikaesi := 100 //it mean loop num nearly sample_size
 
 	fmt.Println("infler_num:",infler_num)
-	ans3 := make([][]float64,0)
-	ans5 := make([][]int,0)
+	ans3 := make([][]float64,0)//values?
+	ans5 := make([][]int,0)//nodes
 
 	for i:=1;i<infler_num;i++{
+		// kurikaesi = i * len(adj)
 		_,ans2,ans4 := opt.RandomSuppression(adj, i, SeedSet_F_strong2,  prob_map, pop_list, interest_list, assum_list, kurikaesi,OnlyInfler)
 
 		ans3 = append(ans3,ans2...)
 		ans5 = append(ans5,ans4...)
 	//
 
-	file1, err := os.Create("Twitter_node_folower_supp"+strconv.Itoa(i)+"kurikasi"+strconv.Itoa(kurikaesi)+".csv")
+	file1, err := os.Create(result_Path+strconv.Itoa(i)+"kurikasi"+strconv.Itoa(kurikaesi)+".csv")
  if err != nil {
 		 panic(err)
  }
@@ -142,7 +429,7 @@ func sample1() {
  writer.Flush()
 	}
 
-	file1, err := os.Create("Twitter_node_folower_supp_all"+"kurikasi"+strconv.Itoa(kurikaesi)+".csv")
+	file1, err := os.Create(result_Path+"allkurikasi"+strconv.Itoa(kurikaesi)+".csv")
  if err != nil {
 		 panic(err)
  }
@@ -164,7 +451,7 @@ func sample1() {
  writer.Flush()
 
 
- file1, err = os.Create("Nodes_Twitter_node_folower_supp_all"+"kurikasi"+strconv.Itoa(kurikaesi)+".csv")
+ file1, err = os.Create(result_Path+"Nodeallkurikasi"+strconv.Itoa(kurikaesi)+".csv")
 if err != nil {
 		panic(err)
 }
@@ -268,7 +555,7 @@ writer.Flush()
 	// }
 	const layout2 = "2006-01-02 15:04:05"
 	str := strings.Replace(time.Now().Format(layout2), ":", "-", -1)
-	folder_path := "result/" + strconv.Itoa(n) + "node" + str //here
+	folder_path := "result/" + strconv.Itoa(n) + "node" + str
 	err = os.Mkdir(folder_path, os.ModePerm)
 	if err != nil {
 		fmt.Println("error create" + folder_path)
@@ -284,7 +571,7 @@ writer.Flush()
 
 	SeedSet_F_strong := make([]int, len(adj))
 	SeedSet_F_strong[0] = 1 //here
-	// SeedSet_Greedy[1] = 1 //here
+	// SeedSet_Greedy[1] = 1
 	//偽情報の発信源を色々と
 	// greedy_ans1, greedy_value1, greedy_value21 := opt.Greedy(1, 100, adj, SeedSet_F_strong, prob_map, pop_list, interest_list, assum_list, 3, true, 1000)
 	// fmt.Println(greedy_ans1, greedy_value1, greedy_value21)
@@ -349,7 +636,7 @@ writer.Flush()
 	// fmt.Println((len(adj)))
 	// for i := 0; i < 2; i++ {
 	// 	SeedSet_Greedy := make([]int, len(adj))
-	// 	SeedSet_Greedy[seedsetfs[i]] = 1 //here
+	// 	SeedSet_Greedy[seedsetfs[i]] = 1 //
 	// 	//偽情報の発信源を色々と
 	// 	for random_seed = 0; random_seed < 10; random_seed++ {
 	// 		greedy_ans, greedy_value, greedy_value2 := opt.Greedy(random_seed, sample_size, adj, SeedSet_Greedy, prob_map, pop_list, interest_list, assum_list, 3, true, sample_size2)
@@ -403,8 +690,36 @@ func sim_submod(adj [][]int, sample_size int, pop_list [2]int, interest_list [][
 }
 
 func main() {
-	// sentaku := []int{0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15}
-	// now := []int{}
+	for i:=0;i<11;i++{
+		fmt.Println()
+		fmt.Println()
+		user_weight := 0.1*float64(i)
+		fmt.Println("user_weight",user_weight)
+		rand.Seed(int64(1))
 
-	sample1()
+
+		var seed int64 = 1
+		adjFilePath := "Graphs/adj_json1000node.txt"
+		adj,interest_list,assum_list := make_adj_interest_assum(adjFilePath,seed)
+		// cal_max_users(adj,7)
+		// use_greedy(adj,interest_list,assum_list,user_weight)
+
+		// use_greedy(adjFilePath)
+		// use_strict(adjFilePath)
+		// adjFilePath = "Graphs/adj_json100node.txt"
+		// adj,interest_list,assum_list = make_adj_interest_assum(adjFilePath,seed)
+		// use_greedy(adj,interest_list,assum_list,user_weight)
+		// use_strict(adj,interest_list,assum_list,user_weight)
+
+		adjFilePath = "Graphs/adj_json50node.txt"
+		adj,interest_list,assum_list = make_adj_interest_assum(adjFilePath,seed)
+		cal_max_users(adj,7)
+		//
+		use_greedy(adj,interest_list,assum_list,user_weight)
+		//
+		// fmt.Println()
+		// use_strict(adj,interest_list,assum_list,user_weight)
+	}
+
+
 }

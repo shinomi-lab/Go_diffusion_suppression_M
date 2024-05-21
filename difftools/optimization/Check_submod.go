@@ -43,7 +43,6 @@ func Check_submod(seed int64, k int, sample_size int, adj [][]int, SeedSet_F []i
 
 	var s_dist []float64 = make([]float64, n)
 
-	rand.Seed(seed)
 
 	//create file
 	new_folder_path := folder_path + "/Check_submod"
@@ -147,7 +146,7 @@ func Check_submod(seed int64, k int, sample_size int, adj [][]int, SeedSet_F []i
 
 func FocusLoop(loop_n int, list1 []int, list2 []int, SeedSet_F []int, seed int64, sample_size int, adj [][]int, prob_map [2][2][2][2]float64, pop [2]int, interest_list [][]int, assum_list [][]int, folder_path string) {
 
-	rand.Seed(seed)
+	_ = seed
 
 	// now := time.Now()
 

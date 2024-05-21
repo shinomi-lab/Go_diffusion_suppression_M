@@ -14,7 +14,7 @@ var Assum_T int = 1
 var Assums_n int = 2
 
 func Make_interest_list(n int, seed int64) [][]int {
-	rand.Seed(seed)
+	_ = seed
 	var interest_list = make([][]int, n)
 	for i := range interest_list {
 		interest_list[i] = make([]int, InfoTypes_n)
@@ -25,7 +25,7 @@ func Make_interest_list(n int, seed int64) [][]int {
 }
 
 func Make_assum_list(n int, seed int64) [][]int {
-	rand.Seed(seed)
+	_ = seed 
 	var assum_list = make([][]int, n)
 	for i := range assum_list {
 		assum_list[i] = make([]int, InfoTypes_n)
