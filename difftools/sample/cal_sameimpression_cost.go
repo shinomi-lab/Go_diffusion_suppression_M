@@ -85,6 +85,7 @@ func main() {
 
 
   adjFilePath := "Graphs/adj_json100node.txt"
+	adjFilePath = "adj_jsonTwitterInteractionUCongress.txt"
   adj,interest_list,assum_list := Make_adj_interest_assum(adjFilePath,seed)
   use_same(adj,interest_list,assum_list)
 
