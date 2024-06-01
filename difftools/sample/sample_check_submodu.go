@@ -31,7 +31,7 @@ type Parameter struct {
 	Assum_list       [][]int
 }
 
-func make_adj_interest_assum(adjFilePath string, seed int64)([][]int,[][]int,[][]int){
+func Make_adj_interest_assum(adjFilePath string, seed int64)([][]int,[][]int,[][]int){
 	bytes, err := ioutil.ReadFile(adjFilePath)
 	if err != nil {
 		panic(err)
@@ -700,20 +700,20 @@ func main() {
 
 		var seed int64 = 1
 		adjFilePath := "Graphs/adj_json1000node.txt"
-		adj,interest_list,assum_list := make_adj_interest_assum(adjFilePath,seed)
+		adj,interest_list,assum_list := Make_adj_interest_assum(adjFilePath,seed)
 		// cal_max_users(adj,7)
 		// use_greedy(adj,interest_list,assum_list,user_weight)
 
 		// use_greedy(adjFilePath)
 		// use_strict(adjFilePath)
 		// adjFilePath = "Graphs/adj_json100node.txt"
-		// adj,interest_list,assum_list = make_adj_interest_assum(adjFilePath,seed)
+		// adj,interest_list,assum_list = Make_adj_interest_assum(adjFilePath,seed)
 		// use_greedy(adj,interest_list,assum_list,user_weight)
 		// use_strict(adj,interest_list,assum_list,user_weight)
 
 		// adjFilePath = "Graphs/adj_json50node.txt"
 		adjFilePath = "adj_jsonTwitterInteractionUCongress.txt"
-		adj,interest_list,assum_list = make_adj_interest_assum(adjFilePath,seed)
+		adj,interest_list,assum_list = Make_adj_interest_assum(adjFilePath,seed)
 		cal_max_users(adj,7)
 		//
 		use_greedy(adj,interest_list,assum_list,user_weight)
