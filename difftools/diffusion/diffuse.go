@@ -36,7 +36,9 @@ func Adjmat(adj [][]int, SeedSet []int, seed int64, prob_map [2][2][2][2]float64
 	}
 
 	//main loop
+	counter := 0
 	for len(current[InfoType_F]) > 0 || len(current[InfoType_T]) > 0 {
+		counter = counter + 1
 		// fmt.Println("current",current)
 		// fmt.Println("recieved_list",recieved_list)
 		next := make([][]int, InfoTypes_n)
@@ -46,6 +48,9 @@ func Adjmat(adj [][]int, SeedSet []int, seed int64, prob_map [2][2][2][2]float64
 				interest := interest_list[s_node][pop]
 				assum := assum_list[s_node][info]
 				p := prob_map[pop][info][interest][assum]
+				if counter == 1{
+					p = p*2
+				}
 
 				for j := 0; j < n; j++ {
 					if adj[s_node][j] == 0 || funcs.Set_Has(recieved_list[InfoType_F], j) || funcs.Set_Has(recieved_list[InfoType_T], j) || funcs.Set_Has(next[InfoType_F], j) || funcs.Set_Has(next[info], j) {
@@ -54,6 +59,7 @@ func Adjmat(adj [][]int, SeedSet []int, seed int64, prob_map [2][2][2][2]float64
 					}
 					randp := rand.Float64()
 					// fmt.Println(randp)
+
 					if p == 1 || p > randp {
 						// fmt.Println(s_node,"to",j,"\t",info, "complete",p,randp)
 						next[info] = append(next[info], j)

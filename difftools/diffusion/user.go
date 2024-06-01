@@ -3,6 +3,8 @@ package diffusion
 import (
 	"math"
 	"math/rand"
+	// "fmt"
+	// "os"
 )
 
 var Interest_low int = 0
@@ -25,7 +27,7 @@ func Make_interest_list(n int, seed int64) [][]int {
 }
 
 func Make_assum_list(n int, seed int64) [][]int {
-	_ = seed 
+	_ = seed
 	var assum_list = make([][]int, n)
 	for i := range assum_list {
 		assum_list[i] = make([]int, InfoTypes_n)
@@ -42,7 +44,7 @@ func Make_probability() [16]float64 {
 	x[1] = 1
 
 	for i := 1; i < 17; i++ {
-		x[i-1] = math.Pow(10.0, float64(-i)/16.0)
+		x[i-1] = math.Pow(10.0, float64(-i)/16.0)/2
 	}
 
 	return x
