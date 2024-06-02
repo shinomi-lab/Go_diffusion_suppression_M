@@ -49,7 +49,7 @@ func Make_adj_interest_assum(adjFilePath string, seed int64)([][]int,[][]int,[][
 	return adj,interest_list,assum_list
 }
 
-func use_same(adj [][]int, interest_list [][]int,assum_list [][]int){
+func user_same(adj [][]int, interest_list [][]int,assum_list [][]int){
   var pop_list [2]int
 
 	pop_list[0] = diff.Pop_high
@@ -79,6 +79,37 @@ func use_same(adj [][]int, interest_list [][]int,assum_list [][]int){
   opt.SameImpressionCost(0,100,adj,non_use_list, prob_map,pop_list,interest_list,assum_list,true)
 }
 
+func follower_same(adj [][]int, interest_list [][]int,assum_list [][]int){
+  var pop_list [2]int
+
+	pop_list[0] = diff.Pop_high
+	pop_list[1] = diff.Pop_high
+
+  var seq [16]float64 = diff.Make_probability()
+
+  var prob_map [2][2][2][2]float64 = diff.Map_probagbility(seq)
+  SeedSet_F := make([]int, len(adj))
+  max_user := 0 //最もフォロワ数が多いユーザ名
+  max_user_num := 0
+  user_num_counter := 0
+  for i:=0; i<len(adj); i++{
+    user_num_counter = 0
+    for j:=0; j<len(adj); j++{
+      if(adj[i][j] == 1){
+        user_num_counter ++
+      }
+    }
+    if(max_user_num < user_num_counter){
+      max_user = i
+      max_user_num = user_num_counter
+    }
+  }
+  SeedSet_F[max_user] = 1
+
+  opt.SameImpressionCostFollower(100,adj,SeedSet_F, prob_map,pop_list,interest_list,assum_list,25,30)
+}
+
+
 func main() {
   rand.Seed(int64(1))
   var seed int64 = 1
@@ -87,6 +118,7 @@ func main() {
   adjFilePath := "Graphs/adj_json100node.txt"
 	adjFilePath = "adj_jsonTwitterInteractionUCongress.txt"
   adj,interest_list,assum_list := Make_adj_interest_assum(adjFilePath,seed)
-  use_same(adj,interest_list,assum_list)
+  // user_same(adj,interest_list,assum_list)
+	follower_same(adj,interest_list,assum_list)
 
 }

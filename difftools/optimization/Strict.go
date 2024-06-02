@@ -228,7 +228,7 @@ func combination2(adj [][]int,pattern []int, elems []int,n int,undder float64,up
 
     /* num_decided個目の要素を"選ぶ"場合のパターンを作成 */
     if(OnlyInfler){
-      if(FolowerSize(adj,num_decided) > 0){
+      if(FolowerSize(adj,num_decided) != 10000000000000){
         pattern[num_decided] = 1;
         combination2(adj, pattern, elems, n, undder, upper, num_decided + 1,OnlyInfler, max_user, user_weight);
       }
@@ -661,6 +661,30 @@ func Selected_Suppression(adj [][]int, selected_list [][]int, SeedSet []int,  pr
     fmt.Println(":",ans / float64(len(selected_list)))
     return ans / float64(len(selected_list))
   }
+}
+
+func Selected_SuppressionReturnList(adj [][]int, selected_list [][]int, SeedSet []int,  prob_map [2][2][2][2]float64, pop [2]int, interest_list [][]int, assum_list [][]int)[]float64{
+  // var ans float64
+  ans := make([]float64,len(selected_list))
+
+
+  for i:=0;i<len(selected_list);i++{
+    S_test := make([]int ,len(SeedSet))
+    _ = copy(S_test, SeedSet)
+    selected:=selected_list[i]
+    for j:=0;j<len(selected);j++{
+      node:=selected[j]
+      if S_test[node] != 0{
+        fmt.Println("ERROR in Selected_Suppression")
+      }
+      S_test[node] = 2
+    }
+    dist := Infl_prop_exp(1, 1000, adj, S_test, prob_map, pop, interest_list, assum_list)//here
+
+    ans[i] = dist[diff.InfoType_T]
+  }
+
+  return ans
 }
 
 func Selected_Suppression_Maximum(adj [][]int, selected_list [][]int, SeedSet []int,  prob_map [2][2][2][2]float64, pop [2]int, interest_list [][]int, assum_list [][]int)([]int,float64){

@@ -107,7 +107,7 @@ func Greedy_exp(seed int64, sample_size int, adj [][]int, Seed_set []int, prob_m
 				continue
 			}
 			if(OnlyInfler){
-				if(FolowerSize(adj,j)==0){
+				if(FolowerSize(adj,j)==10000000000000){
 					continue
 				}
 			}
