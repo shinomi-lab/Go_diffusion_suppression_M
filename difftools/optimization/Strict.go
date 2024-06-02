@@ -679,7 +679,7 @@ func Selected_SuppressionReturnList(adj [][]int, selected_list [][]int, SeedSet 
       }
       S_test[node] = 2
     }
-    dist := Infl_prop_exp(1, 1000, adj, S_test, prob_map, pop, interest_list, assum_list)//here
+    dist := Infl_prop_exp(1, 100, adj, S_test, prob_map, pop, interest_list, assum_list)//here
 
     ans[i] = dist[diff.InfoType_T]
   }
