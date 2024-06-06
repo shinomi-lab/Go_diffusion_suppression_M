@@ -115,10 +115,12 @@ func main() {
   var seed int64 = 1
 
 
-  adjFilePath := "Graphs/adj_json100node.txt"
-	adjFilePath = "adj_jsonTwitterInteractionUCongress.txt"
+  adjFilePath := "Graphs/adj_json1000node.txt"
+	// adjFilePath = "adj_jsonTwitterInteractionUCongress.txt"
   adj,interest_list,assum_list := Make_adj_interest_assum(adjFilePath,seed)
+	// fmt.Println(len(adj))
+	// os.Exit(0)
   user_same(adj,interest_list,assum_list)
-	follower_same(adj,interest_list,assum_list)
+	// follower_same(adj,interest_list,assum_list)
 
 }

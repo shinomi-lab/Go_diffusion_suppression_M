@@ -44,7 +44,7 @@ func Make_probability() [16]float64 {
 	x[1] = 1
 
 	for i := 1; i < 17; i++ {
-		x[i-1] = math.Pow(10.0, float64(-i)/16.0)/2
+		x[i-1] = math.Pow(10.0, float64(-i)/16.0)/8
 	}
 
 	return x
