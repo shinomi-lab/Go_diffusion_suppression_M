@@ -120,7 +120,7 @@ func main() {
   adj,interest_list,assum_list := Make_adj_interest_assum(adjFilePath,seed)
 	// fmt.Println(len(adj))
 	// os.Exit(0)
-  user_same(adj,interest_list,assum_list)
-	// follower_same(adj,interest_list,assum_list)
+  // user_same(adj,interest_list,assum_list)
+	follower_same(adj,interest_list,assum_list)
 
 }

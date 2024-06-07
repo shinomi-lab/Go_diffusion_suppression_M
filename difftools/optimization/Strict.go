@@ -173,11 +173,16 @@ func printCombination(pattern []int,elems []int, n int) {
 
 /* n個の要素からr個の要素を選ぶ場合の全パターンを列挙する */
 func combination(adj [][]int,pattern []int, elems []int,n int,undder int,upper int, num_decided int, OnlyInfler bool) {
-    // fmt.Println("combination now")
+  ketteizumi := 0
+    fmt.Println("num_decided:",num_decided)
     num_selected := getNumSelected(adj, pattern, num_decided, elems);
 
     if (num_decided == n) {
-      // fmt.Println("決定済み")
+      ketteizumi = ketteizumi + 1
+      if(ketteizumi % 100 == 0){
+        fmt.Println("決定",ketteizumi)
+      }
+
         /* n個全ての要素に対して"選ぶ"or"選ばない"が決定ずみ */
         if (num_selected <= upper && num_selected >undder) {
             /* r個だけ選ばれている場合のみ、選ばれた要素を表示 */
@@ -192,12 +197,7 @@ func combination(adj [][]int,pattern []int, elems []int,n int,undder int,upper i
 
     /* num_decided個目の要素を"選ぶ"場合のパターンを作成 */
     if(OnlyInfler){
-      adj_len := len(adj)
-      f_num := 0
-      for i:=0;i<adj_len;i++{
-        f_num += adj[num_decided][i]
-      }
-      if(f_num > 0){
+      if(FolowerSize(adj,num_decided) != 10000000000000){
         pattern[num_decided] = 1;
         combination(adj, pattern, elems, n, undder, upper, num_decided + 1,OnlyInfler);
       }
@@ -347,6 +347,7 @@ func FolowerSize(adj [][]int,node int)int{
 // }
 
 func CallKumiawase(adj [][]int,under int, upper int, SeedSet []int, OnlyInfler bool)[][]int {
+    aaa = make([][]int,0)
     fmt.Println("calling CallKumiawase")
     //nを指定することで選べるユーザ数の上限を決めれる
     n := len(adj)

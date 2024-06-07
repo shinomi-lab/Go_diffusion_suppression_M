@@ -8,9 +8,10 @@ import (
 )
 
 func SameImpressionCostFollower(sample_size int, adj [][]int, SeedSet_F []int, prob_map [2][2][2][2]float64, pop [2]int, interest_list [][]int, assum_list [][]int,under int, upper int){
-
+  fmt.Println("calling SameImpressionCostFollower")
   zerolist := make([]int,len(adj))
   sameFollowerList := CallKumiawase(adj, under,upper, SeedSet_F,true)
+  fmt.Println("start selected suprresion return list")
   suppList := Selected_SuppressionReturnList(adj, sameFollowerList, zerolist,  prob_map , pop, interest_list, assum_list)
   file, err := os.Create("SameImporessionCostFollower.csv")
   if err != nil {
