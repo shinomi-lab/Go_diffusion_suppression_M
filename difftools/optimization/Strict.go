@@ -174,7 +174,7 @@ func printCombination(pattern []int,elems []int, n int) {
 /* n個の要素からr個の要素を選ぶ場合の全パターンを列挙する */
 func combination(adj [][]int,pattern []int, elems []int,n int,undder int,upper int, num_decided int, OnlyInfler bool) {
   ketteizumi := 0
-    fmt.Println("num_decided:",num_decided)
+    // fmt.Println("num_decided:",num_decided)
     num_selected := getNumSelected(adj, pattern, num_decided, elems);
 
     if (num_decided == n) {
