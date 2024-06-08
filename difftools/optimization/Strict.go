@@ -155,7 +155,8 @@ func Strict2(seed int64, sample_size int , adj [][]int , Seed_set []int, prob_ma
 
 var aaa [][]int
 var saiki int
-
+var ketteizumi int
+var counter int
 
 
 //[0,1,1,0,1]→[1,2,4]に型変換して代入
@@ -173,13 +174,18 @@ func printCombination(pattern []int,elems []int, n int) {
 
 /* n個の要素からr個の要素を選ぶ場合の全パターンを列挙する */
 func combination(adj [][]int,pattern []int, elems []int,n int,undder int,upper int, num_decided int, OnlyInfler bool) {
-  ketteizumi := 0
+
     // fmt.Println("num_decided:",num_decided)
     num_selected := getNumSelected(adj, pattern, num_decided, elems);
 
+    // if(num_decided != counter){
+    //   counter = num_decided
+    //   fmt.Println("plus one",counter,n)
+    // }
+
     if (num_decided == n) {
       ketteizumi = ketteizumi + 1
-      if(ketteizumi % 100 == 0){
+      if(ketteizumi % 1000 == 0){
         fmt.Println("決定",ketteizumi)
       }
 
@@ -194,17 +200,23 @@ func combination(adj [][]int,pattern []int, elems []int,n int,undder int,upper i
     /* num_decided個目の要素を"選ばない"場合のパターンを作成 */
     pattern[num_decided] = 0;
     combination(adj, pattern, elems, n, undder, upper, num_decided + 1,OnlyInfler);
+    if(num_selected <= upper){
+      /* num_decided個目の要素を"選ぶ"場合のパターンを作成 */
+      if(OnlyInfler){
+        if(FolowerSize(adj,num_decided) != 10000000000000){
+          pattern[num_decided] = 1;
+          combination(adj, pattern, elems, n, undder, upper, num_decided + 1,OnlyInfler);
+          }else{
+            // fmt.Println("除外している")
+          }
+          }else{
+            pattern[num_decided] = 1;
+            combination(adj, pattern, elems, n, undder, upper, num_decided + 1,OnlyInfler);
 
-    /* num_decided個目の要素を"選ぶ"場合のパターンを作成 */
-    if(OnlyInfler){
-      if(FolowerSize(adj,num_decided) != 10000000000000){
-        pattern[num_decided] = 1;
-        combination(adj, pattern, elems, n, undder, upper, num_decided + 1,OnlyInfler);
-      }
+          }
+
     }else{
-      pattern[num_decided] = 1;
-      combination(adj, pattern, elems, n, undder, upper, num_decided + 1,OnlyInfler);
-
+      // fmt.Println("除外している")
     }
 }
 
@@ -347,6 +359,8 @@ func FolowerSize(adj [][]int,node int)int{
 // }
 
 func CallKumiawase(adj [][]int,under int, upper int, SeedSet []int, OnlyInfler bool)[][]int {
+    ketteizumi = 0
+    counter = 0
     aaa = make([][]int,0)
     fmt.Println("calling CallKumiawase")
     //nを指定することで選べるユーザ数の上限を決めれる

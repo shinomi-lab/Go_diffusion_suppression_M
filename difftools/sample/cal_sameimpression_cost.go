@@ -106,7 +106,7 @@ func follower_same(adj [][]int, interest_list [][]int,assum_list [][]int){
   }
   SeedSet_F[max_user] = 1
 
-  opt.SameImpressionCostFollower(100,adj,SeedSet_F, prob_map,pop_list,interest_list,assum_list,25,30)
+  opt.SameImpressionCostFollower(100,adj,SeedSet_F, prob_map,pop_list,interest_list,assum_list,0,2)
 }
 
 
