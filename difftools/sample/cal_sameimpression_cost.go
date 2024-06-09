@@ -3,7 +3,7 @@ package main
 import (
 	// "encoding/csv"
 	"encoding/json"
-	// "fmt"
+	"fmt"
 	"io/ioutil"
 	// "log"
 	diff "m/difftools/diffusion"
@@ -49,7 +49,7 @@ func Make_adj_interest_assum(adjFilePath string, seed int64)([][]int,[][]int,[][
 	return adj,interest_list,assum_list
 }
 
-func user_same(adj [][]int, interest_list [][]int,assum_list [][]int){
+func user_same(adj [][]int, interest_list [][]int,assum_list [][]int, exit_f bool){
   var pop_list [2]int
 
 	pop_list[0] = diff.Pop_high
@@ -76,10 +76,10 @@ func user_same(adj [][]int, interest_list [][]int,assum_list [][]int){
   }
   non_use_list[0] = max_user
 
-  opt.SameImpressionCost(0,100,adj,non_use_list, prob_map,pop_list,interest_list,assum_list,true)
+  opt.SameImpressionCost(0,100,adj,non_use_list, prob_map,pop_list,interest_list,assum_list,true,exit_f)
 }
 
-func follower_same(adj [][]int, interest_list [][]int,assum_list [][]int){
+func follower_same(adj [][]int, interest_list [][]int,assum_list [][]int, exit_f bool){
   var pop_list [2]int
 
 	pop_list[0] = diff.Pop_high
@@ -106,21 +106,22 @@ func follower_same(adj [][]int, interest_list [][]int,assum_list [][]int){
   }
   SeedSet_F[max_user] = 1
 
-  opt.SameImpressionCostFollower(100,adj,SeedSet_F, prob_map,pop_list,interest_list,assum_list,0,2)
+  opt.SameImpressionCostFollower(100,adj,SeedSet_F, prob_map,pop_list,interest_list,assum_list,15,16,exit_f)
 }
 
 
 func main() {
+	fmt.Println("start cal_sameimpression_cost.go")
   rand.Seed(int64(1))
   var seed int64 = 1
 
 
   adjFilePath := "Graphs/adj_json1000node.txt"
-	// adjFilePath = "adj_jsonTwitterInteractionUCongress.txt"
+	adjFilePath = "adj_jsonTwitterInteractionUCongress.txt"
   adj,interest_list,assum_list := Make_adj_interest_assum(adjFilePath,seed)
 	// fmt.Println(len(adj))
 	// os.Exit(0)
-  // user_same(adj,interest_list,assum_list)
-	follower_same(adj,interest_list,assum_list)
+  user_same(adj,interest_list,assum_list,true)
+	follower_same(adj,interest_list,assum_list,true)
 
 }

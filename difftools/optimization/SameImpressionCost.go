@@ -7,7 +7,7 @@ import (
   "bufio"
 )
 
-func SameImpressionCost(seed int64, sample_size int, adj [][]int, non_use_list []int, prob_map [2][2][2][2]float64, pop [2]int, interest_list [][]int, assum_list [][]int, OnlyInfler bool){
+func SameImpressionCost(seed int64, sample_size int, adj [][]int, non_use_list []int, prob_map [2][2][2][2]float64, pop [2]int, interest_list [][]int, assum_list [][]int, OnlyInfler bool, exit_f bool){
 	//sample_size2はグリーディで求めた解をより詳しくやる
 	var n int = len(adj)
 	var result float64
@@ -15,7 +15,24 @@ func SameImpressionCost(seed int64, sample_size int, adj [][]int, non_use_list [
 
 	S := make([]int, len(adj))
 	S_test := make([]int, len(adj))
-
+	if exit_f{
+		max_user := 0 //最もフォロワ数が多いユーザ名
+		max_user_num := 0
+		user_num_counter := 0
+		for i:=0; i<len(adj); i++{
+			user_num_counter = 0
+			for j:=0; j<len(adj); j++{
+				if(adj[i][j] == 1){
+					user_num_counter ++
+				}
+			}
+			if(max_user_num < user_num_counter){
+				max_user = i
+				max_user_num = user_num_counter
+			}
+		}
+		S[max_user] = 1
+	}
 
 	var info_num int
 
