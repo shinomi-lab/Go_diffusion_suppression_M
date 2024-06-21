@@ -245,10 +245,20 @@ func use_greedy(adj [][]int, interest_list [][]int,assum_list [][]int, user_weig
 		}
 
 		fmt.Println("start_greedy")
-		s := time.Now()
-		greedy_ans, _ := opt.Greedy_exp(0,100,adj,SeedSet_F_strong2, prob_map,pop_list,interest_list,assum_list,infler_num,true,3,max_user,true, user_weight)
-		fmt.Println("greedy_time:",time.Since(s))
+		greedy_ans1, _, _ := opt.Greedy(0,100,adj,SeedSet_F_strong2, prob_map,pop_list,interest_list,assum_list,5,true,1000)
+
 		cost_sum := 0.0
+		for j:=0;j<len(greedy_ans1);j++{
+			cost_sum += opt.Cal_cost_kaiki(user_weight,1-user_weight,adj, greedy_ans1[j], max_user)
+		}
+		fmt.Println("cost_sum",cost_sum)
+		cost_sum = 0
+		os.Exit(0)
+
+		s := time.Now()
+		greedy_ans, _ := opt.Greedy_exp(0,100,adj,SeedSet_F_strong2, prob_map,pop_list,interest_list,assum_list,infler_num,true,350,max_user,true, user_weight,true)
+		fmt.Println("greedy_time:",time.Since(s))
+
 		for j:=0;j<len(greedy_ans);j++{
 			cost_sum += opt.Cal_cost(user_weight,1-user_weight,adj, greedy_ans[j], max_user)
 		}
@@ -695,10 +705,10 @@ func main() {
 		fmt.Println()
 		user_weight := 0.1*float64(i)
 		fmt.Println("user_weight",user_weight)
-		rand.Seed(int64(1))
+		rand.Seed(int64(i))
 
 
-		var seed int64 = 1
+		var seed int64 = int64(i)
 		adjFilePath := "Graphs/adj_json1000node.txt"
 		adj,interest_list,assum_list := Make_adj_interest_assum(adjFilePath,seed)
 		// cal_max_users(adj,7)

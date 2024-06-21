@@ -52,9 +52,12 @@ func SameImpressionCost(seed int64, sample_size int, adj [][]int, non_use_list [
 
 		_ = copy(S_test, S)//初期化
 
-		if S_test[j] != 0 { //すでに発信源のユーザだったら
+		if S_test[j] == 2 { //すでに発信源のユーザだったら
       fmt.Println("error in SameImpressionCost.go")
       os.Exit(0)
+		}
+		if S_test[j] == 1{//虚偽情報の発信源だったら
+			continue
 		}
     if(contains(non_use_list,j)){
       continue

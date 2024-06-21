@@ -1,93 +1,54 @@
-//このファイルはgo言語の使い方を実験的に調べるために球に使うファイルです
-
 package main
 
-import(
-  "fmt"
-  "encoding/json"
-  "io/ioutil"
-  "math/rand"
-  "os"
-  "reflect"
+import (
+	"bufio"
+	"fmt"
+	"os"
+	"strconv"
+	"strings"
 )
 
-func main(){
-  n := 5
-  max_users := make([]int,n)
-
-	user_num_counter := 0
-	max_user_nums := make([]int,n)
-  list := []int{22, 5, 2, 1, 15, 11, 18}
-  for i:=0;i<len(list);i++{
-    user_num_counter = list[i]
-    for j:=0;j<n;j++{
-      if(max_user_nums[j] < user_num_counter){
-        m := n-1
-        for k:=j;k<m;k++{
-          max_users[m-k+j] = max_users[m-k+j-1]
-          max_user_nums[m-k+j] = max_user_nums[m-k+j-1]
-          fmt.Println(i,max_user_nums)
-        }
-        max_users[j] = i
-        max_user_nums[j] = user_num_counter
-        fmt.Println(i,max_user_nums)
-
-        break
-      }
-  }
-}
-  fmt.Println(max_users,max_user_nums)
-  os.Exit(0)
-
-  slice := [][]int{{1, 15, 18}, {1, 15, 18}}
-  slice2 := [][]int{{1, 15, 18}, {1, 15, 18}}
-
-  fmt.Println(reflect.DeepEqual(slice, slice2))
-  os.Exit(0)
-
-  fmt.Println("practice")
-
-  for i:=0;i<20;i++{
-    rand.Seed(1)
-    MakeRand()
-  }
-  os.Exit(0)
-
-  node_list_path := "Python_random_nodelists/node_list.txt"
-	bytes, err := ioutil.ReadFile(node_list_path)
+func main() {
+	// ファイルを開く
+	file, err := os.Open("kaiki.txt")
 	if err != nil {
-		panic(err)
+		fmt.Println("ファイルを開く際にエラーが発生しました:", err)
+		return
+	}
+	defer file.Close()
+
+	// ファイルを読み込む
+	scanner := bufio.NewScanner(file)
+	var line string
+	if scanner.Scan() {
+		line = scanner.Text()
 	}
 
-  var dataJson string = string(bytes)
-
-	arr := make(map[int]map[int]int)
-	// var arr []string
-	_ = json.Unmarshal([]byte(dataJson), &arr)
-	// fmt.Println(arr)
-
-	fmt.Println(arr[2][0])
-  fmt.Println(arr)
-  // n := len(arr[0])
-	var adj [][]int = make([][]int, len(arr))
-
-	//make adj
-	for i := 0; i < len(arr); i++ {
-		adj[i] = make([]int, len(arr[i]))
-		for j := 0; j < len(arr[i]); j++ {
-			adj[i][j] = arr[i][j]
-      // print(adj[i][j])
-		}
-    // print("---------------")
+	if err := scanner.Err(); err != nil {
+		fmt.Println("ファイルを読み取る際にエラーが発生しました:", err)
+		return
 	}
-  fmt.Println(adj)
-}
 
+	// コンマで分割して整数に変換する
+	parts := strings.Split(line, ",")
+	if len(parts) != 2 {
+		fmt.Println("予期しないデータ形式です")
+		return
+	}
 
-func MakeRand(){
-  for j:=0;j<4;j++{
+	a, err := strconv.ParseFloat(parts[0], 64)
+	if err != nil {
+		fmt.Println("最初の部分を整数に変換する際にエラーが発生しました:", err)
+		return
+	}
 
-    fmt.Println(rand.Float64())
-  }
+	b, err := strconv.ParseFloat(parts[1], 64)
+	if err != nil {
+		fmt.Println("二番目の部分を整数に変換する際にエラーが発生しました:", err)
+		return
+	}
 
+	// 結果を表示する
+	fmt.Println("a:", a)
+	fmt.Println("b:", b)
 }
