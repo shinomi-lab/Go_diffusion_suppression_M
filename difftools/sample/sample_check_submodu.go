@@ -171,7 +171,7 @@ func use_strict(adj [][]int, interest_list [][]int,assum_list [][]int, user_weig
 			return adj, selected_list, SeedSet_F_strong2,  prob_map , pop_list, interest_list, assum_list
 }
 
-func use_greedy(adj [][]int, interest_list [][]int,assum_list [][]int, user_weight float64)([][]int, [][]int, []int, [2][2][2][2]float64, [2]int, [][]int, [][]int){
+func use_greedy(adj [][]int, interest_list [][]int,assum_list [][]int, user_weight float64)([][]int, []int, [2][2][2][2]float64, [2]int, [][]int, [][]int){
 
 		// var n int = 50
 		// var seesd int64 = 1
@@ -245,34 +245,51 @@ func use_greedy(adj [][]int, interest_list [][]int,assum_list [][]int, user_weig
 		}
 
 		fmt.Println("start_greedy")
-		greedy_ans1, _, _ := opt.Greedy(0,100,adj,SeedSet_F_strong2, prob_map,pop_list,interest_list,assum_list,5,true,1000)
+		// greedy_ans1, _, _ := opt.Greedy(0,100,adj,SeedSet_F_strong2, prob_map,pop_list,interest_list,assum_list,5,true,1000)
 
 		cost_sum := 0.0
-		for j:=0;j<len(greedy_ans1);j++{
-			cost_sum += opt.Cal_cost_kaiki(user_weight,1-user_weight,adj, greedy_ans1[j], max_user)
-		}
-		fmt.Println("cost_sum",cost_sum)
-		cost_sum = 0
-		os.Exit(0)
+		// for j:=0;j<len(greedy_ans1);j++{
+		// 	cost_sum += opt.Cal_cost_kaiki(user_weight,1-user_weight,adj, greedy_ans1[j], max_user)
+		// }
+		// fmt.Println("cost_sum",cost_sum)
+		// cost_sum = 0
+		// os.Exit(0)
 
 		s := time.Now()
+		//虚偽情報アリの影響最大化問題の解を求める
 		greedy_ans, _ := opt.Greedy_exp(0,100,adj,SeedSet_F_strong2, prob_map,pop_list,interest_list,assum_list,infler_num,true,350,max_user,true, user_weight,true)
 		fmt.Println("greedy_time:",time.Since(s))
 
 		for j:=0;j<len(greedy_ans);j++{
-			cost_sum += opt.Cal_cost(user_weight,1-user_weight,adj, greedy_ans[j], max_user)
+			cost_sum += opt.Cal_cost_kaiki(user_weight,1-user_weight,adj, greedy_ans[j], max_user)
 		}
-		test_greedy_ans := make([][]int,1)
-		test_greedy_ans[0] = greedy_ans
 
-		_,test_greedy_ans_v := opt.Selected_Suppression_Maximum(adj,test_greedy_ans, SeedSet_F_strong2,  prob_map , pop_list, interest_list, assum_list)
 
-		fmt.Println(greedy_ans)
+		// _,test_greedy_ans_v := opt.Selected_Suppression_Maximum(adj,test_greedy_ans, SeedSet_F_strong2,  prob_map , pop_list, interest_list, assum_list)
+
+		fmt.Println("虚偽情報アリの解",greedy_ans)
 		// fmt.Println(greedy_ans_v)
-		fmt.Println(test_greedy_ans_v)
+		// fmt.Println(test_greedy_ans_v)
 		fmt.Println("cost_sum:",cost_sum)
 
-		return adj,test_greedy_ans, SeedSet_F_strong2,  prob_map , pop_list, interest_list, assum_list
+		nonF_SeedSet := make([]int, len(adj))
+		greedy_ans, _ = opt.Greedy_exp(0,100,adj,nonF_SeedSet, prob_map,pop_list,interest_list,assum_list,infler_num,true,350,max_user,true, user_weight,true)
+		fmt.Println("greedy_time:",time.Since(s))
+
+		cost_sum = 0
+		for j:=0;j<len(greedy_ans);j++{
+			cost_sum += opt.Cal_cost_kaiki(user_weight,1-user_weight,adj, greedy_ans[j], max_user)
+		}
+
+
+
+
+		fmt.Println("虚偽情報なしの解",greedy_ans)
+		// fmt.Println(greedy_ans_v)
+		// fmt.Println(test_greedy_ans_v)
+		fmt.Println("cost_sum:",cost_sum)
+
+		return adj, SeedSet_F_strong2,  prob_map , pop_list, interest_list, assum_list
 }
 
 func cal_max_users(adj [][]int, n int){
@@ -704,7 +721,8 @@ func main() {
 		fmt.Println()
 		fmt.Println()
 		user_weight := 0.1*float64(i)
-		fmt.Println("user_weight",user_weight)
+		// fmt.Println("user_weight",user_weight)
+		fmt.Println("seed",i)
 		rand.Seed(int64(i))
 
 
@@ -724,7 +742,10 @@ func main() {
 		// adjFilePath = "Graphs/adj_json50node.txt"
 		adjFilePath = "adj_jsonTwitterInteractionUCongress.txt"
 		adj,interest_list,assum_list = Make_adj_interest_assum(adjFilePath,seed)
-		cal_max_users(adj,7)
+		if i == 0{
+
+			cal_max_users(adj,7)
+		}
 		//
 		use_greedy(adj,interest_list,assum_list,user_weight)
 		//
