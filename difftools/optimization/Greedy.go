@@ -87,7 +87,7 @@ func (a ByInfl) Len() int           { return len(a) }
 func (a ByInfl) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
 func (a ByInfl) Less(i, j int) bool { return a[i].infl < a[j].infl }
 
-func Greedy_exp(seed int64, sample_size int, adj [][]int, Seed_set []int, prob_map [2][2][2][2]float64, pop [2]int, interest_list [][]int, assum_list [][]int, ans_len int, Count_true bool, capacity float64, max_user int, OnlyInfler bool, user_weight float64, use_kaiki bool)([]int, []float64) {
+func Greedy_exp(seed int64, sample_size int, adj [][]int, Seed_set []int, prob_map [2][2][2][2]float64, pop [2]int, interest_list [][]int, assum_list [][]int, ans_len int, Count_true bool, capacity float64, max_user int, OnlyInfler bool, user_weight float64, use_kaiki bool)([]int, float64) {
 
 	var costcal func(float64, float64,[][]int,int,int) float64
 	if use_kaiki{
@@ -100,7 +100,6 @@ func Greedy_exp(seed int64, sample_size int, adj [][]int, Seed_set []int, prob_m
 	var result float64
 	var index int
 	var ans []int
-	var ans_v []float64
 
 	ans = make([]int, 0, ans_len)
 	S := make([]int, len(Seed_set))
@@ -159,7 +158,7 @@ func Greedy_exp(seed int64, sample_size int, adj [][]int, Seed_set []int, prob_m
 
 		S[index] = info_num
 	}
-	return ans, ans_v
+	return ans, max
 }
 
 func Cal_cost(u_weight float64, f_wight float64,adj [][]int,node int, max_user int)float64{

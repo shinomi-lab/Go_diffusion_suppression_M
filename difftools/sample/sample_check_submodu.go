@@ -257,37 +257,43 @@ func use_greedy(adj [][]int, interest_list [][]int,assum_list [][]int, user_weig
 
 		s := time.Now()
 		//虚偽情報アリの影響最大化問題の解を求める
-		greedy_ans, _ := opt.Greedy_exp(0,100,adj,SeedSet_F_strong2, prob_map,pop_list,interest_list,assum_list,infler_num,true,350,max_user,true, user_weight,true)
+		greedy_ans, greedy_ans_v := opt.Greedy_exp(0,100,adj,SeedSet_F_strong2, prob_map,pop_list,interest_list,assum_list,infler_num,true,350,max_user,true, user_weight,true)
 		fmt.Println("greedy_time:",time.Since(s))
 
 		for j:=0;j<len(greedy_ans);j++{
 			cost_sum += opt.Cal_cost_kaiki(user_weight,1-user_weight,adj, greedy_ans[j], max_user)
 		}
 
+		fmt.Println("虚偽情報アリの解",greedy_ans,greedy_ans_v)
+		nonF_SeedSet := make([]int, len(adj))
 
-		// _,test_greedy_ans_v := opt.Selected_Suppression_Maximum(adj,test_greedy_ans, SeedSet_F_strong2,  prob_map , pop_list, interest_list, assum_list)
+		greedy_ans2 := make([][]int,0)
+		greedy_ans2 = append(greedy_ans2,greedy_ans)
+		_,test_greedy_ans_v := opt.Selected_Suppression_Maximum(adj,greedy_ans2, nonF_SeedSet,  prob_map , pop_list, interest_list, assum_list)
 
-		fmt.Println("虚偽情報アリの解",greedy_ans)
+		fmt.Println("虚偽情報アリの解を無しに使ってみたら...",test_greedy_ans_v)
 		// fmt.Println(greedy_ans_v)
-		// fmt.Println(test_greedy_ans_v)
 		fmt.Println("cost_sum:",cost_sum)
 
-		nonF_SeedSet := make([]int, len(adj))
-		greedy_ans, _ = opt.Greedy_exp(0,100,adj,nonF_SeedSet, prob_map,pop_list,interest_list,assum_list,infler_num,true,350,max_user,true, user_weight,true)
+		greedy_ans, greedy_ans_v = opt.Greedy_exp(0,100,adj,nonF_SeedSet, prob_map,pop_list,interest_list,assum_list,infler_num,true,350,max_user,true, user_weight,true)
 		fmt.Println("greedy_time:",time.Since(s))
 
 		cost_sum = 0
 		for j:=0;j<len(greedy_ans);j++{
 			cost_sum += opt.Cal_cost_kaiki(user_weight,1-user_weight,adj, greedy_ans[j], max_user)
 		}
-
-
-
-
-		fmt.Println("虚偽情報なしの解",greedy_ans)
+		fmt.Println("虚偽情報なしの解",greedy_ans,greedy_ans_v)
 		// fmt.Println(greedy_ans_v)
 		// fmt.Println(test_greedy_ans_v)
 		fmt.Println("cost_sum:",cost_sum)
+
+		greedy_ans2 = make([][]int,0)
+		greedy_ans2 = append(greedy_ans2,greedy_ans)
+		_,test_greedy_ans_v = opt.Selected_Suppression_Maximum(adj,greedy_ans2, nonF_SeedSet,  prob_map , pop_list, interest_list, assum_list)
+
+		fmt.Println("虚偽情報なしの解をアリに使ってみたら...",test_greedy_ans_v)
+
+
 
 		return adj, SeedSet_F_strong2,  prob_map , pop_list, interest_list, assum_list
 }
