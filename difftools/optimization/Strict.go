@@ -723,6 +723,7 @@ func Selected_Suppression_Maximum(adj [][]int, selected_list [][]int, SeedSet []
       S_test[node] = 2
     }
     // fmt.Println(S_test)
+    rand.seed(100)
     dist := Infl_prop_exp(-1, 1000, adj, S_test, prob_map, pop, interest_list, assum_list)
 
     ans  = dist[diff.InfoType_T]

@@ -265,7 +265,11 @@ func use_greedy(adj [][]int, interest_list [][]int,assum_list [][]int, user_weig
 		}
 		greedy_ans2 := make([][]int,0)
 		greedy_ans2 = append(greedy_ans2,greedy_ans)
+		SeedSet_F_strong2 = make([]int, len(adj))
+		SeedSet_F_strong2[max_user] = 1
 		_,test_greedy_ans_v := opt.Selected_Suppression_Maximum(adj,greedy_ans2, SeedSet_F_strong2,  prob_map , pop_list, interest_list, assum_list)
+		SeedSet_F_strong2 = make([]int, len(adj))//念のため初期化
+		SeedSet_F_strong2[max_user] = 1
 
 		fmt.Println("虚偽情報アリの解",greedy_ans,test_greedy_ans_v)
 		nonF_SeedSet := make([]int, len(adj))
@@ -275,7 +279,7 @@ func use_greedy(adj [][]int, interest_list [][]int,assum_list [][]int, user_weig
 		fmt.Println("虚偽情報アリの解を無しに使ってみたら...",test_greedy_ans_v)
 		// fmt.Println(greedy_ans_v)
 		fmt.Println("cost_sum:",cost_sum)
-
+		nonF_SeedSet = make([]int, len(adj))//念のため初期化
 		greedy_ans, _ = opt.Greedy_exp(0,100,adj,nonF_SeedSet, prob_map,pop_list,interest_list,assum_list,infler_num,true,350,max_user,true, user_weight,true)
 		fmt.Println("greedy_time:",time.Since(s))
 
@@ -286,12 +290,14 @@ func use_greedy(adj [][]int, interest_list [][]int,assum_list [][]int, user_weig
 		greedy_ans2 = make([][]int,0)
 		greedy_ans2 = append(greedy_ans2,greedy_ans)
 
+		nonF_SeedSet = make([]int, len(adj))//念のため初期化
 		_,test_greedy_ans_v = opt.Selected_Suppression_Maximum(adj,greedy_ans2, nonF_SeedSet,  prob_map , pop_list, interest_list, assum_list)
 
 		fmt.Println("虚偽情報なしの解",greedy_ans,test_greedy_ans_v)
 		// fmt.Println(greedy_ans_v)
 		// fmt.Println(test_greedy_ans_v)
 		fmt.Println("cost_sum:",cost_sum)
+
 
 		_,test_greedy_ans_v = opt.Selected_Suppression_Maximum(adj,greedy_ans2, SeedSet_F_strong2,  prob_map , pop_list, interest_list, assum_list)
 

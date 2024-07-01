@@ -8,6 +8,7 @@ import (
 	"bufio"
 	"strings"
 	"strconv"
+	"math/rand"
 
 )
 
@@ -136,7 +137,7 @@ func Greedy_exp(seed int64, sample_size int, adj [][]int, Seed_set []int, prob_m
 				continue
 			}
 			S_test[j] = info_num
-
+			rand.seed(100)//おそらく後で消す　重要
 			dist := Infl_prop_exp(seed, sample_size, adj, S_test, prob_map, pop, interest_list, assum_list)
 			if Count_true {
 				result = dist[diff.InfoType_T]/costcal(user_weight,1-user_weight,adj,j,max_user)
