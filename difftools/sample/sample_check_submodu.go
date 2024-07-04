@@ -171,7 +171,7 @@ func use_strict(adj [][]int, interest_list [][]int,assum_list [][]int, user_weig
 			return adj, selected_list, SeedSet_F_strong2,  prob_map , pop_list, interest_list, assum_list
 }
 
-func use_greedy(adj [][]int, interest_list [][]int,assum_list [][]int, user_weight float64)([][]int, []int, [2][2][2][2]float64, [2]int, [][]int, [][]int){
+func use_greedy(adj [][]int, interest_list [][]int,assum_list [][]int, user_weight float64, capacity float64)([][]int, []int, [2][2][2][2]float64, [2]int, [][]int, [][]int){
 
 		// var n int = 50
 		// var seesd int64 = 1
@@ -257,7 +257,7 @@ func use_greedy(adj [][]int, interest_list [][]int,assum_list [][]int, user_weig
 
 		s := time.Now()
 		//虚偽情報アリの影響最大化問題の解を求める
-		greedy_ans, _ := opt.Greedy_exp(0,100,adj,SeedSet_F_strong2, prob_map,pop_list,interest_list,assum_list,infler_num,true,350,max_user,true, user_weight,true)
+		greedy_ans, _ := opt.Greedy_exp(0,100,adj,SeedSet_F_strong2, prob_map,pop_list,interest_list,assum_list,infler_num,true,capacity,max_user,true, user_weight,true)
 		fmt.Println("greedy_time:",time.Since(s))
 
 		for j:=0;j<len(greedy_ans);j++{
@@ -280,7 +280,7 @@ func use_greedy(adj [][]int, interest_list [][]int,assum_list [][]int, user_weig
 		// fmt.Println(greedy_ans_v)
 		fmt.Println("cost_sum:",cost_sum)
 		nonF_SeedSet = make([]int, len(adj))//念のため初期化
-		greedy_ans, _ = opt.Greedy_exp(0,100,adj,nonF_SeedSet, prob_map,pop_list,interest_list,assum_list,infler_num,true,350,max_user,true, user_weight,true)
+		greedy_ans, _ = opt.Greedy_exp(0,100,adj,nonF_SeedSet, prob_map,pop_list,interest_list,assum_list,infler_num,true,capacity,max_user,true, user_weight,true)
 		fmt.Println("greedy_time:",time.Since(s))
 
 		cost_sum = 0
@@ -762,8 +762,8 @@ func main() {
 
 			cal_max_users(adj,7)
 		}
-		//
-		use_greedy(adj,interest_list,assum_list,user_weight)
+		capacity := 300.0
+		use_greedy(adj,interest_list,assum_list,user_weight,capacity)
 		//
 		// fmt.Println()
 		// use_strict(adj,interest_list,assum_list,user_weight)
