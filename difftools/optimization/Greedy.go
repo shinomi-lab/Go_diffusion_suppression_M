@@ -177,6 +177,7 @@ func Cal_cost(u_weight float64, f_wight float64,adj [][]int,node int, max_user i
 }
 
 func Cal_cost_kaiki(u_weight float64, f_wight float64,adj [][]int,node int, max_user int)float64{
+	return 100.0
 	f := FolowerSize(adj,node)
 	file, err := os.Open("kaiki.txt")
 	if err != nil {

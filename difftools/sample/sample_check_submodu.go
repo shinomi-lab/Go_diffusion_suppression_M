@@ -762,7 +762,7 @@ func main() {
 
 			cal_max_users(adj,7)
 		}
-		capacity := 300.0
+		capacity := 302.0
 		use_greedy(adj,interest_list,assum_list,user_weight,capacity)
 		//
 		// fmt.Println()
