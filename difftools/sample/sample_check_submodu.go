@@ -763,7 +763,7 @@ func main() {
 			cal_max_users(adj,7)
 		}
 		capacity := 302.0
-		for j:=0;j<10;j++{
+		for j:=0.0;j<10.0;j++{
 			capacity = j*100.0
 			use_greedy(adj,interest_list,assum_list,user_weight,capacity)
 		}
