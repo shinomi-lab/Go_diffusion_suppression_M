@@ -108,6 +108,7 @@ func Greedy_exp(seed int64, sample_size int, adj [][]int, Seed_set []int, prob_m
 	S_test := make([]int, len(Seed_set))
 	_ = copy(S_test, Seed_set)
 	cap_use := capacity
+	pre_infl := 0.0
 
 	var info_num int
 
@@ -140,12 +141,13 @@ func Greedy_exp(seed int64, sample_size int, adj [][]int, Seed_set []int, prob_m
 			rand.Seed(100)//おそらく後で消す　重要
 			dist := Infl_prop_exp(seed, sample_size, adj, S_test, prob_map, pop, interest_list, assum_list)
 			if Count_true {
-				result = dist[diff.InfoType_T]/costcal(user_weight,1-user_weight,adj,j,max_user)
+				result = (dist[diff.InfoType_T]-pre_infl)/costcal(user_weight,1-user_weight,adj,j,max_user)
 			} else {
 				result = dist[diff.InfoType_F]/costcal(user_weight,1-user_weight,adj,j,max_user)
 			}
 
 			if result > max {
+				pre_infl = dist[diff.InfoType_T]
 				max = result
 				index = j
 			}
