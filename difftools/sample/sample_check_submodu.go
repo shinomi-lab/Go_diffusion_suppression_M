@@ -308,6 +308,147 @@ func use_greedy(adj [][]int, interest_list [][]int,assum_list [][]int, user_weig
 		return adj, SeedSet_F_strong2,  prob_map , pop_list, interest_list, assum_list
 }
 
+func use_DP(adj [][]int, interest_list [][]int,assum_list [][]int, user_weight float64, capacity float64)([][]int, []int, [2][2][2][2]float64, [2]int, [][]int, [][]int){
+
+		// var n int = 50
+		// var seesd int64 = 1
+		// var K_F int = 5
+		// var K_T int = 10
+		// var sample_size int = 1000
+		var pop_list [2]int
+		pop_list[0] = diff.Pop_high
+		pop_list[1] = diff.Pop_high
+
+
+
+
+		// fmt.Println(string(bytes))
+
+
+
+
+
+
+		fmt.Println("--------------------")
+
+		// var SeedSet_F []int = diff.Make_seedSet_F(n, 1, seed, adj)
+
+		// var interest_list [][]int = diff.Make_interest_list(n, seed)
+		//
+		// var assum_list [][]int = diff.Make_assum_list(n, seed)
+
+		var seq [16]float64 = diff.Make_probability()
+
+		var prob_map [2][2][2][2]float64 = diff.Map_probagbility(seq)
+
+		// fmt.Println("Seedsetf")
+		// fmt.Println(SeedSet_F)
+		//
+		// fmt.Println("prob_map")
+		// fmt.Println(prob_map)
+
+		SeedSet_F_strong2 := make([]int, len(adj))
+		max_user := 0 //最もフォロワ数が多いユーザ名
+		max_user_num := 0
+		user_num_counter := 0
+		for i:=0; i<len(adj); i++{
+			user_num_counter = 0
+			for j:=0; j<len(adj); j++{
+				if(adj[i][j] == 1){
+					user_num_counter ++
+				}
+			}
+			if(max_user_num < user_num_counter){
+				max_user = i
+				max_user_num = user_num_counter
+			}
+		}
+		SeedSet_F_strong2[max_user] = 1
+
+
+
+		//人数を流動的にして拡散を調べている
+			//	総フォロワー数を固定できていない
+		//拡散可能な人数を調べている
+		infler_num := 0
+		// OnlyInfler := true
+		for j:=0;j<len(adj);j++{
+			for k:=0;k<len(adj);k++{
+				if(adj[j][k] != 0){
+					infler_num += 1
+					break
+				}
+			}
+		}
+
+		fmt.Println("start_DP")
+		// greedy_ans1, _, _ := opt.Greedy(0,100,adj,SeedSet_F_strong2, prob_map,pop_list,interest_list,assum_list,5,true,1000)
+
+		cost_sum := 0.0
+		// for j:=0;j<len(greedy_ans1);j++{
+		// 	cost_sum += opt.Cal_cost_kaiki(user_weight,1-user_weight,adj, greedy_ans1[j], max_user)
+		// }
+		// fmt.Println("cost_sum",cost_sum)
+		// cost_sum = 0
+		// os.Exit(0)
+
+		s := time.Now()
+		//虚偽情報アリの影響最大化問題の解を求める
+		DP_ans,_ := opt.DP(0,100,adj,SeedSet_F_strong2, prob_map,pop_list,interest_list,assum_list,infler_num,true,capacity,max_user,true, user_weight,true,10)
+		fmt.Println("DP_time:",time.Since(s))
+
+		// DP_ans := DP_user_infl.Users
+
+		for j:=0;j<len(DP_ans);j++{
+			cost_sum += opt.Cal_cost_kaiki(user_weight,1-user_weight,adj, DP_ans[j], max_user)
+		}
+		DP_ans2 := make([][]int,0)
+		DP_ans2 = append(DP_ans2,DP_ans)
+		SeedSet_F_strong2 = make([]int, len(adj))
+		SeedSet_F_strong2[max_user] = 1
+		_,test_DP_ans_v := opt.Selected_Suppression_Maximum(adj,DP_ans2, SeedSet_F_strong2,  prob_map , pop_list, interest_list, assum_list)
+		SeedSet_F_strong2 = make([]int, len(adj))//念のため初期化
+		SeedSet_F_strong2[max_user] = 1
+
+		fmt.Println("虚偽情報アリの解",DP_ans,test_DP_ans_v)
+		nonF_SeedSet := make([]int, len(adj))
+
+		_,test_DP_ans_v = opt.Selected_Suppression_Maximum(adj,DP_ans2, nonF_SeedSet,  prob_map , pop_list, interest_list, assum_list)
+
+		fmt.Println("虚偽情報アリの解を無しに使ってみたら...",test_DP_ans_v)
+		// fmt.Println(greedy_ans_v)
+		fmt.Println("cost_sum:",cost_sum)
+		nonF_SeedSet = make([]int, len(adj))//念のため初期化
+		DP_ans,_ = opt.DP(0,100,adj,nonF_SeedSet, prob_map,pop_list,interest_list,assum_list,infler_num,true,capacity,max_user,true, user_weight,true,10)
+		fmt.Println("DP_time:",time.Since(s))
+
+		// DP_ans := DP_user_infl.Users
+
+		cost_sum = 0
+		for j:=0;j<len(DP_ans);j++{
+			cost_sum += opt.Cal_cost_kaiki(user_weight,1-user_weight,adj, DP_ans[j], max_user)
+		}
+		DP_ans2 = make([][]int,0)
+		DP_ans2 = append(DP_ans2,DP_ans)
+
+		nonF_SeedSet = make([]int, len(adj))//念のため初期化
+		_,test_DP_ans_v = opt.Selected_Suppression_Maximum(adj,DP_ans2, nonF_SeedSet,  prob_map , pop_list, interest_list, assum_list)
+
+		fmt.Println("虚偽情報なしの解",DP_ans,test_DP_ans_v)
+		// fmt.Println(greedy_ans_v)
+		// fmt.Println(test_greedy_ans_v)
+		fmt.Println("cost_sum:",cost_sum)
+
+
+		_,test_DP_ans_v = opt.Selected_Suppression_Maximum(adj,DP_ans2, SeedSet_F_strong2,  prob_map , pop_list, interest_list, assum_list)
+
+		fmt.Println("虚偽情報なしの解をアリに使ってみたら...",test_DP_ans_v)
+
+
+
+		return adj, SeedSet_F_strong2,  prob_map , pop_list, interest_list, assum_list
+}
+
 func cal_max_users(adj [][]int, n int){
 	// max_user := 0 //最もフォロワ数が多いユーザ名
 	m := n-1
@@ -765,7 +906,7 @@ func main() {
 		capacity := 302.0
 		for j:=1.0;j<5.0;j++{
 			capacity = j*100.0
-			use_greedy(adj,interest_list,assum_list,user_weight,capacity)
+			use_DP(adj,interest_list,assum_list,user_weight,capacity)
 		}
 		//
 		// fmt.Println()

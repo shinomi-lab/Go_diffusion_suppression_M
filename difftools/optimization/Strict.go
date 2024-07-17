@@ -203,7 +203,7 @@ func combination(adj [][]int,pattern []int, elems []int,n int,undder int,upper i
     if(num_selected <= upper){
       /* num_decided個目の要素を"選ぶ"場合のパターンを作成 */
       if(OnlyInfler){
-        if(FolowerSize(adj,num_decided) != 10000000000000){
+        if(FolowerSize(adj,num_decided) != 0){
           pattern[num_decided] = 1;
           combination(adj, pattern, elems, n, undder, upper, num_decided + 1,OnlyInfler);
           }else{
@@ -240,7 +240,7 @@ func combination2(adj [][]int,pattern []int, elems []int,n int,undder float64,up
 
     /* num_decided個目の要素を"選ぶ"場合のパターンを作成 */
     if(OnlyInfler){
-      if(FolowerSize(adj,num_decided) != 10000000000000){
+      if(FolowerSize(adj,num_decided) != 0){
         pattern[num_decided] = 1;
         combination2(adj, pattern, elems, n, undder, upper, num_decided + 1,OnlyInfler, max_user, user_weight);
       }
@@ -338,9 +338,9 @@ func FolowerSize(adj [][]int,node int)int{
       ans = ans + 1
     }
   }
-    if(ans ==0){
-      ans = 10000000000000
-    }
+    // if(ans ==0){
+    //   ans = 10000000000000
+    // }
     return ans
 }
 

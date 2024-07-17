@@ -130,7 +130,7 @@ func Greedy_exp(seed int64, sample_size int, adj [][]int, Seed_set []int, prob_m
 				continue
 			}
 			if(OnlyInfler){
-				if(FolowerSize(adj,j)==10000000000000){
+				if(FolowerSize(adj,j)==0){
 					continue
 				}
 			}
@@ -143,7 +143,7 @@ func Greedy_exp(seed int64, sample_size int, adj [][]int, Seed_set []int, prob_m
 			if Count_true {
 				result = (dist[diff.InfoType_T]-pre_infl)/costcal(user_weight,1-user_weight,adj,j,max_user)
 			} else {
-				result = dist[diff.InfoType_F]/costcal(user_weight,1-user_weight,adj,j,max_user)
+				result = (dist[diff.InfoType_F]-pre_infl)/costcal(user_weight,1-user_weight,adj,j,max_user)
 			}
 
 			if result > max {
@@ -166,6 +166,9 @@ func Greedy_exp(seed int64, sample_size int, adj [][]int, Seed_set []int, prob_m
 
 func Cal_cost(u_weight float64, f_wight float64,adj [][]int,node int, max_user int)float64{
 	f := FolowerSize(adj,node)
+	if(f==0){
+		f = 10000000000000
+	}
 	u_max := len(adj)
 	f_max := 0
 	for i:=0; i<u_max; i++{
@@ -181,6 +184,9 @@ func Cal_cost(u_weight float64, f_wight float64,adj [][]int,node int, max_user i
 func Cal_cost_kaiki(u_weight float64, f_wight float64,adj [][]int,node int, max_user int)float64{
 	// return 100.0
 	f := FolowerSize(adj,node)
+	if(f==0){
+		f = 10000000000000
+	}
 	file, err := os.Open("kaiki.txt")
 	if err != nil {
 		fmt.Println("ファイルを開く際にエラーが発生しました:", err)
@@ -220,4 +226,100 @@ func Cal_cost_kaiki(u_weight float64, f_wight float64,adj [][]int,node int, max_
 	}
 	// fmt.Println(math.Log(float64(f))*slope +intercept)
 	return math.Log(float64(f))*slope +intercept
+}
+
+
+type Users_infl struct {
+    Infl float64
+    Users  []int
+}
+
+func (ui *Users_infl) AddUser(user int) {
+    ui.Users = append(ui.Users,user)
+}
+
+func DP(seed int64, sample_size int, adj [][]int, Seed_set []int, prob_map [2][2][2][2]float64, pop [2]int, interest_list [][]int, assum_list [][]int, ans_len int, Count_true bool, capacity float64, max_user int, OnlyInfler bool, user_weight float64, use_kaiki bool, nick int)([]int,float64){
+
+	var info_num int
+	var result float64
+
+	if Count_true {
+		info_num = 2
+	} else {
+		info_num = 1
+	}
+
+	var costcal func(float64, float64,[][]int,int,int) float64
+	if use_kaiki{
+		costcal = Cal_cost_kaiki
+	}else{
+		costcal = Cal_cost
+	}
+
+	S := make([]int, len(Seed_set))
+	_ = copy(S, Seed_set)
+
+	onlyiflerlist := OnlyInflerlist(adj)
+	onlyinfler_num := len(onlyiflerlist)
+
+	n := onlyinfler_num
+	l_list := int(int(capacity)/nick)
+
+	// dp := make([][]float64,n+1) // <- dpは構造体にして拡散量と既に選ばれているユーザ集合を入れる
+	dp := make([][]Users_infl,n+1)
+
+	for i:=0;i<n;i++{
+		// dp[i] = make([]float64,l_list)
+		dp[i] = make([]Users_infl,l_list)
+	}
+
+	for w:=0;w<l_list;w++{
+		dp[0][w].Infl = 0
+	}
+	for i:=0;i<n;i++{
+		focus_user := onlyiflerlist[i]
+		for j:=0;j<l_list;j++{
+			// cost_w := j*nick
+			cost_i := costcal(user_weight,1-user_weight,adj,focus_user,max_user)
+			cost_i_int := int(cost_i)
+			//dp[i+1][j]に代入していく i番目までを選べるコストj*nick以下
+			if j < cost_i_int/nick{//大きすぎると不可能
+				continue
+			}
+			_ = copy(S, Seed_set)//初期化
+			for k:=0;k<len(dp[i][j].Users);k++{
+				S[dp[i][j].Users[k]] = info_num
+			}
+			S[focus_user] = info_num
+			rand.Seed(100)//おそらく後で消す　重要
+			dist := Infl_prop_exp(seed, sample_size, adj, S, prob_map, pop, interest_list, assum_list)
+			if Count_true {
+				result = dist[diff.InfoType_T]
+			} else {
+				result = dist[diff.InfoType_F]
+			}//resultをdp[i][j].users+onlyiflerlist[i]での拡散にする複数回同じ拡散を調べたくないけど，一旦後回し？
+			if dp[i][j].Infl < result{
+				dp[i+1][j].Infl = result
+			}else{
+				dp[i+1][j].Infl = dp[i][j].Infl
+
+			}
+		}
+	}
+	return dp[n][l_list-1].Users,dp[n][l_list-1].Infl
+}
+
+func OnlyInflerlist(adj [][]int)[]int{
+	n := len(adj)
+	ans := make([]int,0,n)
+
+	for i:=0;i<n;i++{
+		if FolowerSize(adj,i) != 0{
+			ans = append(ans,i)
+		}
+
+	}
+
+	fmt.Println(ans)
+	return ans
 }

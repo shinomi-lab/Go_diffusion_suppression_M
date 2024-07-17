@@ -12,6 +12,32 @@ import(
 )
 
 func main(){
+
+  for i:=0;i<10;i++{
+    fmt.Println(i)
+  }
+  for i:=0;i<10;i++{
+    fmt.Println(i)
+  }
+  var intn float64
+  intn = 1.1
+  var floatn float64
+  floatn = 555.5
+  fmt.Println(floatn/intn)
+
+  list1n := 3
+  list2n := 4
+
+  dp := make([][]float64,list1n)
+  for listi:=0;listi<list1n;listi++{
+    dp[listi] = make([]float64,list2n)
+  }
+
+  dp[2][3] = 2.2
+
+  fmt.Println(dp)
+
+  os.Exit(0)
   n := 5
   max_users := make([]int,n)
 

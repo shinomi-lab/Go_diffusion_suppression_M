@@ -63,7 +63,7 @@ func SameImpressionCost(seed int64, sample_size int, adj [][]int, non_use_list [
       continue
     }
 		if(OnlyInfler){
-			if(FolowerSize(adj,j)==10000000000000){
+			if(FolowerSize(adj,j)== 0){
 				continue
 			}
 		}
