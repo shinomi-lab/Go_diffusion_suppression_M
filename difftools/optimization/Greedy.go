@@ -268,20 +268,22 @@ func DP(seed int64, sample_size int, adj [][]int, Seed_set []int, prob_map [2][2
 	// dp := make([][]float64,n+1) // <- dpは構造体にして拡散量と既に選ばれているユーザ集合を入れる
 	dp := make([][]Users_infl,n+1)
 
-	for i:=0;i<n;i++{
+	for i:=0;i<n+1;i++{
 		// dp[i] = make([]float64,l_list)
 		dp[i] = make([]Users_infl,l_list)
 	}
-
+	// fmt.Println(dp)
+	// os.Exit(0)
 	for w:=0;w<l_list;w++{
 		dp[0][w].Infl = 0
 	}
 	for i:=0;i<n;i++{
 		focus_user := onlyiflerlist[i]
+		cost_i := costcal(user_weight,1-user_weight,adj,focus_user,max_user)
+		cost_i_int := int(cost_i)
 		for j:=0;j<l_list;j++{
 			// cost_w := j*nick
-			cost_i := costcal(user_weight,1-user_weight,adj,focus_user,max_user)
-			cost_i_int := int(cost_i)
+			// fmt.Println("i:",i)
 			//dp[i+1][j]に代入していく i番目までを選べるコストj*nick以下
 			if j < cost_i_int/nick{//大きすぎると不可能
 				continue
@@ -298,6 +300,7 @@ func DP(seed int64, sample_size int, adj [][]int, Seed_set []int, prob_map [2][2
 			} else {
 				result = dist[diff.InfoType_F]
 			}//resultをdp[i][j].users+onlyiflerlist[i]での拡散にする複数回同じ拡散を調べたくないけど，一旦後回し？
+			// fmt.Println(len(dp),len(dp[i]),dp[i+1][j],i,j)
 			if dp[i][j].Infl < result{
 				dp[i+1][j].Infl = result
 			}else{
