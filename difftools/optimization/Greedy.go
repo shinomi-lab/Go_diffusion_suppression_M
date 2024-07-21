@@ -134,16 +134,19 @@ func Greedy_exp(seed int64, sample_size int, adj [][]int, Seed_set []int, prob_m
 					continue
 				}
 			}
-			if costcal(user_weight, 1-user_weight, adj, j, max_user)>cap_use{//コストが大きすぎるユーザなら
+
+			// cost := costcal(user_weight, 1-user_weight, adj, j, max_user)
+			cost := Cal_cost_infl(adj, j, prob_map, pop, interest_list , assum_list)
+			if cost > cap_use{//コストが大きすぎるユーザなら
 				continue
 			}
 			S_test[j] = info_num
 			rand.Seed(100)//おそらく後で消す　重要
 			dist := Infl_prop_exp(seed, sample_size, adj, S_test, prob_map, pop, interest_list, assum_list)
 			if Count_true {
-				result = (dist[diff.InfoType_T]-pre_infl)/costcal(user_weight,1-user_weight,adj,j,max_user)
+				result = (dist[diff.InfoType_T]-pre_infl)/cost
 			} else {
-				result = (dist[diff.InfoType_F]-pre_infl)/costcal(user_weight,1-user_weight,adj,j,max_user)
+				result = (dist[diff.InfoType_F]-pre_infl)/cost 
 			}
 
 			if result > max {
@@ -157,7 +160,8 @@ func Greedy_exp(seed int64, sample_size int, adj [][]int, Seed_set []int, prob_m
 			break;
 		}
 		ans = append(ans, index)
-		cap_use -= costcal(user_weight,1-user_weight,adj,index,max_user)
+		cap_use -= Cal_cost_infl(adj, index, prob_map, pop, interest_list , assum_list)
+		// cap_use -= costcal(user_weight,1-user_weight,adj,index,max_user)
 
 		S[index] = info_num
 	}
@@ -228,6 +232,15 @@ func Cal_cost_kaiki(u_weight float64, f_wight float64,adj [][]int,node int, max_
 	return math.Log(float64(f))*slope +intercept
 }
 
+func Cal_cost_infl(adj [][]int,node int,  prob_map [2][2][2][2]float64, pop [2]int, interest_list [][]int, assum_list [][]int)float64{
+
+	S_test := make([]int, len(adj))
+	S_test[node] = 2
+	rand.Seed(100)
+	dist := Infl_prop_exp(100, 1000, adj, S_test, prob_map, pop, interest_list, assum_list)
+
+	return dist[diff.InfoType_T]
+}
 
 type Users_infl struct {
     Infl float64

@@ -904,14 +904,12 @@ func main() {
 			cal_max_users(adj,7)
 		}
 		capacity := 302.0
-		for j:=1.0;j<5.0;j++{
+		for j:=1.0;j<7.0;j++{
 			capacity = j*100.0
-			use_DP(adj,interest_list,assum_list,user_weight,capacity)
+			use_greedy(adj,interest_list,assum_list,user_weight,capacity)
 		}
 		//
 		// fmt.Println()
 		// use_strict(adj,interest_list,assum_list,user_weight)
 	}
-
-
 }
