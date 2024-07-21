@@ -90,12 +90,12 @@ func (a ByInfl) Less(i, j int) bool { return a[i].infl < a[j].infl }
 
 func Greedy_exp(seed int64, sample_size int, adj [][]int, Seed_set []int, prob_map [2][2][2][2]float64, pop [2]int, interest_list [][]int, assum_list [][]int, ans_len int, Count_true bool, capacity float64, max_user int, OnlyInfler bool, user_weight float64, use_kaiki bool)([]int, float64) {
 
-	var costcal func(float64, float64,[][]int,int,int) float64
-	if use_kaiki{
-		costcal = Cal_cost_kaiki
-	}else{
-		costcal = Cal_cost
-	}
+	// var costcal func(float64, float64,[][]int,int,int) float64
+	// if use_kaiki{
+	// 	costcal = Cal_cost_kaiki
+	// }else{
+	// 	costcal = Cal_cost
+	// }
 	var n int = len(adj)
 	var max float64 = 0
 	var result float64
@@ -146,7 +146,7 @@ func Greedy_exp(seed int64, sample_size int, adj [][]int, Seed_set []int, prob_m
 			if Count_true {
 				result = (dist[diff.InfoType_T]-pre_infl)/cost
 			} else {
-				result = (dist[diff.InfoType_F]-pre_infl)/cost 
+				result = (dist[diff.InfoType_F]-pre_infl)/cost
 			}
 
 			if result > max {
@@ -322,6 +322,7 @@ func DP(seed int64, sample_size int, adj [][]int, Seed_set []int, prob_map [2][2
 			}
 		}
 	}
+	fmt.Println(dp)
 	return dp[n][l_list-1].Users,dp[n][l_list-1].Infl
 }
 
