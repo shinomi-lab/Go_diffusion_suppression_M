@@ -251,6 +251,11 @@ func (ui *Users_infl) AddUser(user int) {
     ui.Users = append(ui.Users,user)
 }
 
+func (ui *Users_infl) CopyUsers(users []int){
+	ui.Users = make([]int,len(users))
+	copy(ui.Users,users)
+}
+
 func DP(seed int64, sample_size int, adj [][]int, Seed_set []int, prob_map [2][2][2][2]float64, pop [2]int, interest_list [][]int, assum_list [][]int, ans_len int, Count_true bool, capacity float64, max_user int, OnlyInfler bool, user_weight float64, use_kaiki bool, nick int)([]int,float64){
 
 	var info_num int
@@ -276,7 +281,7 @@ func DP(seed int64, sample_size int, adj [][]int, Seed_set []int, prob_map [2][2
 	onlyinfler_num := len(onlyiflerlist)
 
 	n := onlyinfler_num
-	l_list := int(int(capacity)/nick)
+	l_list := int(int(capacity)/nick)+1
 
 	// dp := make([][]float64,n+1) // <- dpは構造体にして拡散量と既に選ばれているユーザ集合を入れる
 	dp := make([][]Users_infl,n+1)
@@ -299,11 +304,14 @@ func DP(seed int64, sample_size int, adj [][]int, Seed_set []int, prob_map [2][2
 			// fmt.Println("i:",i)
 			//dp[i+1][j]に代入していく i番目までを選べるコストj*nick以下
 			if j < cost_i_int/nick{//大きすぎると不可能
+				dp[i+1][j].Infl = dp[i][j].Infl
+				dp[i+1][j].CopyUsers(dp[i][j].Users)
 				continue
 			}
 			_ = copy(S, Seed_set)//初期化
-			for k:=0;k<len(dp[i][j].Users);k++{
-				S[dp[i][j].Users[k]] = info_num
+			last_cost := j-cost_i_int/nick
+			for k:=0;k<len(dp[i][last_cost].Users);k++{
+				S[dp[i][last_cost].Users[k]] = info_num
 			}
 			S[focus_user] = info_num
 			rand.Seed(100)//おそらく後で消す　重要
@@ -316,9 +324,11 @@ func DP(seed int64, sample_size int, adj [][]int, Seed_set []int, prob_map [2][2
 			// fmt.Println(len(dp),len(dp[i]),dp[i+1][j],i,j)
 			if dp[i][j].Infl < result{
 				dp[i+1][j].Infl = result
+				dp[i+1][j].CopyUsers(dp[i][last_cost].Users)
+				dp[i+1][j].AddUser(focus_user)
 			}else{
 				dp[i+1][j].Infl = dp[i][j].Infl
-
+				dp[i+1][j].CopyUsers(dp[i][j].Users)
 			}
 		}
 	}
