@@ -332,7 +332,7 @@ func DP(seed int64, sample_size int, adj [][]int, Seed_set []int, prob_map [2][2
 			}
 		}
 	}
-	fmt.Println(dp)
+	// fmt.Println(dp)
 	return dp[n][l_list-1].Users,dp[n][l_list-1].Infl
 }
 
@@ -344,9 +344,7 @@ func OnlyInflerlist(adj [][]int)[]int{
 		if FolowerSize(adj,i) != 0{
 			ans = append(ans,i)
 		}
-
 	}
-
-	fmt.Println(ans)
+	// fmt.Println(ans)
 	return ans
 }
