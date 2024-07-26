@@ -341,11 +341,7 @@ func use_DP(adj [][]int, interest_list [][]int,assum_list [][]int, user_weight f
 
 		var prob_map [2][2][2][2]float64 = diff.Map_probagbility(seq)
 
-		// fmt.Println("Seedsetf")
-		// fmt.Println(SeedSet_F)
-		//
-		// fmt.Println("prob_map")
-		// fmt.Println(prob_map)
+
 
 		SeedSet_F_strong2 := make([]int, len(adj))
 		max_user := 0 //最もフォロワ数が多いユーザ名
@@ -364,6 +360,8 @@ func use_DP(adj [][]int, interest_list [][]int,assum_list [][]int, user_weight f
 			}
 		}
 		SeedSet_F_strong2[max_user] = 1
+		non_use_list := make([]int,1)
+		non_use_list[0] = max_user
 
 
 
@@ -394,7 +392,7 @@ func use_DP(adj [][]int, interest_list [][]int,assum_list [][]int, user_weight f
 
 		s := time.Now()
 		//虚偽情報アリの影響最大化問題の解を求める
-		DP_ans,_ := opt.DP(0,100,adj,SeedSet_F_strong2, prob_map,pop_list,interest_list,assum_list,infler_num,true,capacity,max_user,true, user_weight,true,10)
+		DP_ans,_ := opt.DP(0,100,adj,SeedSet_F_strong2, prob_map,pop_list,interest_list,assum_list,infler_num,true,capacity,max_user,true, user_weight,true,10,non_use_list)
 		fmt.Println("DP_time:",time.Since(s))
 
 		// DP_ans := DP_user_infl.Users
@@ -419,7 +417,7 @@ func use_DP(adj [][]int, interest_list [][]int,assum_list [][]int, user_weight f
 		// fmt.Println(greedy_ans_v)
 		fmt.Println("cost_sum:",cost_sum)
 		nonF_SeedSet = make([]int, len(adj))//念のため初期化
-		DP_ans,_ = opt.DP(0,100,adj,nonF_SeedSet, prob_map,pop_list,interest_list,assum_list,infler_num,true,capacity,max_user,true, user_weight,true,10)
+		DP_ans,_ = opt.DP(0,100,adj,nonF_SeedSet, prob_map,pop_list,interest_list,assum_list,infler_num,true,capacity,max_user,true, user_weight,true,10,non_use_list)
 		fmt.Println("DP_time:",time.Since(s))
 
 		// DP_ans := DP_user_infl.Users

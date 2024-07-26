@@ -256,7 +256,7 @@ func (ui *Users_infl) CopyUsers(users []int){
 	copy(ui.Users,users)
 }
 
-func DP(seed int64, sample_size int, adj [][]int, Seed_set []int, prob_map [2][2][2][2]float64, pop [2]int, interest_list [][]int, assum_list [][]int, ans_len int, Count_true bool, capacity float64, max_user int, OnlyInfler bool, user_weight float64, use_kaiki bool, nick int)([]int,float64){
+func DP(seed int64, sample_size int, adj [][]int, Seed_set []int, prob_map [2][2][2][2]float64, pop [2]int, interest_list [][]int, assum_list [][]int, ans_len int, Count_true bool, capacity float64, max_user int, OnlyInfler bool, user_weight float64, use_kaiki bool, nick int, non_use_list []int)([]int,float64){
 
 	var info_num int
 	var result float64
@@ -277,7 +277,7 @@ func DP(seed int64, sample_size int, adj [][]int, Seed_set []int, prob_map [2][2
 	S := make([]int, len(Seed_set))
 	_ = copy(S, Seed_set)
 
-	onlyiflerlist := OnlyInflerlist(adj)
+	onlyiflerlist := OnlyInflerlist(adj,non_use_list)
 	onlyinfler_num := len(onlyiflerlist)
 
 	n := onlyinfler_num
@@ -336,15 +336,26 @@ func DP(seed int64, sample_size int, adj [][]int, Seed_set []int, prob_map [2][2
 	return dp[n][l_list-1].Users,dp[n][l_list-1].Infl
 }
 
-func OnlyInflerlist(adj [][]int)[]int{
+func OnlyInflerlist(adj [][]int,non_use_list []int)[]int{
 	n := len(adj)
 	ans := make([]int,0,n)
 
 	for i:=0;i<n;i++{
 		if FolowerSize(adj,i) != 0{
-			ans = append(ans,i)
+			if !IsInList(i,non_use_list){
+				ans = append(ans,i)
+			}
 		}
 	}
 	// fmt.Println(ans)
 	return ans
+}
+
+func IsInList(n int, list []int)bool{
+	for i:=0;i<len(list);i++{
+		if list[i] == n{
+			return true
+		}
+	}
+	return false
 }
