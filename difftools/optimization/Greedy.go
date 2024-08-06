@@ -242,6 +242,10 @@ func Cal_cost_infl(adj [][]int,node int,  prob_map [2][2][2][2]float64, pop [2]i
 	return dist[diff.InfoType_T]
 }
 
+func Cal_cost_user100(u_weight float64, f_wight float64,adj [][]int,node int, max_user int)float64{
+	return 100.0
+}
+
 type Users_infl struct {
     Infl float64
     Users  []int
@@ -256,7 +260,7 @@ func (ui *Users_infl) CopyUsers(users []int){
 	copy(ui.Users,users)
 }
 
-func DP(seed int64, sample_size int, adj [][]int, Seed_set []int, prob_map [2][2][2][2]float64, pop [2]int, interest_list [][]int, assum_list [][]int, ans_len int, Count_true bool, capacity float64, max_user int, OnlyInfler bool, user_weight float64, use_kaiki bool, nick int, non_use_list []int)([]int,float64){
+func DP(seed int64, sample_size int, adj [][]int, Seed_set []int, prob_map [2][2][2][2]float64, pop [2]int, interest_list [][]int, assum_list [][]int, ans_len int, Count_true bool, capacity float64, max_user int, OnlyInfler bool, user_weight float64, use_kaiki bool, nick int, non_use_list []int, use_user bool)([]int,float64){
 
 	var info_num int
 	var result float64
@@ -270,6 +274,8 @@ func DP(seed int64, sample_size int, adj [][]int, Seed_set []int, prob_map [2][2
 	var costcal func(float64, float64,[][]int,int,int) float64
 	if use_kaiki{
 		costcal = Cal_cost_kaiki
+	}else if use_user{
+		costcal = Cal_cost_user100
 	}else{
 		costcal = Cal_cost
 	}
