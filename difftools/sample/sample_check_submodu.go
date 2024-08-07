@@ -308,7 +308,7 @@ func use_greedy(adj [][]int, interest_list [][]int,assum_list [][]int, user_weig
 		return adj, SeedSet_F_strong2,  prob_map , pop_list, interest_list, assum_list
 }
 
-func use_DP(adj [][]int, interest_list [][]int,assum_list [][]int, user_weight float64, capacity float64, use_user bool)([][]int, []int, [2][2][2][2]float64, [2]int, [][]int, [][]int){
+func use_DP(adj [][]int, interest_list [][]int,assum_list [][]int, user_weight float64, capacity float64, use_user bool, nick int)([][]int, []int, [2][2][2][2]float64, [2]int, [][]int, [][]int){
 
 		// var n int = 50
 		// var seesd int64 = 1
@@ -392,7 +392,7 @@ func use_DP(adj [][]int, interest_list [][]int,assum_list [][]int, user_weight f
 
 		s := time.Now()
 		//虚偽情報アリの影響最大化問題の解を求める
-		DP_ans,_ := opt.DP(0,100,adj,SeedSet_F_strong2, prob_map,pop_list,interest_list,assum_list,infler_num,true,capacity,max_user,true, user_weight,!use_user,10,non_use_list,use_user)
+		DP_ans,_ := opt.DP(0,100,adj,SeedSet_F_strong2, prob_map,pop_list,interest_list,assum_list,infler_num,true,capacity,max_user,true, user_weight,!use_user,nick,non_use_list,use_user)
 		fmt.Println("DP_time:",time.Since(s))
 
 		// DP_ans := DP_user_infl.Users
@@ -884,7 +884,7 @@ func main() {
 		var seed int64 = int64(i)
 		adjFilePath := "Graphs/adj_json1000node.txt"
 		adj,interest_list,assum_list := Make_adj_interest_assum(adjFilePath,seed)
-		use_user := true//DPをコストをuser*100数でやる
+		use_user := false//DPをコストをuser*100数でやる
 		// cal_max_users(adj,7)
 		// use_greedy(adj,interest_list,assum_list,user_weight)
 
@@ -905,7 +905,7 @@ func main() {
 		capacity := 302.0
 		for j:=1.0;j<7.0;j++{
 			capacity = j*100.0
-			use_DP(adj,interest_list,assum_list,user_weight,capacity,use_user)
+			use_DP(adj,interest_list,assum_list,user_weight,capacity,use_user,1)
 		}
 		//
 		// fmt.Println()

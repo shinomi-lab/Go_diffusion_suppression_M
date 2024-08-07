@@ -232,6 +232,53 @@ func Cal_cost_kaiki(u_weight float64, f_wight float64,adj [][]int,node int, max_
 	return math.Log(float64(f))*slope +intercept
 }
 
+func Cal_cost_kaiki_int(u_weight float64, f_wight float64,adj [][]int,node int, max_user int)float64{
+	// return 100.0
+	f := FolowerSize(adj,node)
+	if(f==0){
+		f = 10000000000000
+	}
+	file, err := os.Open("kaiki.txt")
+	if err != nil {
+		fmt.Println("ファイルを開く際にエラーが発生しました:", err)
+		return -1
+	}
+	defer file.Close()
+
+	// ファイルを読み込む
+	scanner := bufio.NewScanner(file)
+	var line string
+	if scanner.Scan() {
+		line = scanner.Text()
+	}
+
+	if err := scanner.Err(); err != nil {
+		fmt.Println("ファイルを読み取る際にエラーが発生しました:", err)
+		return -1
+	}
+
+	// コンマで分割して整数に変換する
+	parts := strings.Split(line, ",")
+	if len(parts) != 2 {
+		fmt.Println("予期しないデータ形式です")
+		return -1
+	}
+
+	intercept, err := strconv.ParseFloat(parts[0], 64)
+	if err != nil {
+		fmt.Println("最初の部分を整数に変換する際にエラーが発生しました:", err)
+		return -1
+	}
+
+	slope, err := strconv.ParseFloat(parts[1], 64)
+	if err != nil {
+		fmt.Println("二番目の部分を整数に変換する際にエラーが発生しました:", err)
+		return -1
+	}
+	// fmt.Println(math.Log(float64(f))*slope +intercept)
+	return float64(int(math.Log(float64(f))*slope +intercept))
+}
+
 func Cal_cost_infl(adj [][]int,node int,  prob_map [2][2][2][2]float64, pop [2]int, interest_list [][]int, assum_list [][]int)float64{
 
 	S_test := make([]int, len(adj))
@@ -240,6 +287,16 @@ func Cal_cost_infl(adj [][]int,node int,  prob_map [2][2][2][2]float64, pop [2]i
 	dist := Infl_prop_exp(100, 1000, adj, S_test, prob_map, pop, interest_list, assum_list)
 
 	return dist[diff.InfoType_T]
+}
+
+func Cal_cost_infl_int(adj [][]int,node int,  prob_map [2][2][2][2]float64, pop [2]int, interest_list [][]int, assum_list [][]int)float64{
+
+	S_test := make([]int, len(adj))
+	S_test[node] = 2
+	rand.Seed(100)
+	dist := Infl_prop_exp(100, 1000, adj, S_test, prob_map, pop, interest_list, assum_list)
+
+	return float64(int(dist[diff.InfoType_T]))
 }
 
 func Cal_cost_user100(u_weight float64, f_wight float64,adj [][]int,node int, max_user int)float64{
@@ -273,7 +330,7 @@ func DP(seed int64, sample_size int, adj [][]int, Seed_set []int, prob_map [2][2
 
 	var costcal func(float64, float64,[][]int,int,int) float64
 	if use_kaiki{
-		costcal = Cal_cost_kaiki
+		costcal = Cal_cost_kaiki_int
 	}else if use_user{
 		costcal = Cal_cost_user100
 	}else{
