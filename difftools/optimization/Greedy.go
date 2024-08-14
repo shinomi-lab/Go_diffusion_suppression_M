@@ -232,7 +232,7 @@ func Cal_cost_kaiki(u_weight float64, f_wight float64,adj [][]int,node int, max_
 	return math.Log(float64(f))*slope +intercept
 }
 
-func Cal_cost_kaiki_int(u_weight float64, f_wight float64,adj [][]int,node int, max_user int)float64{
+func Cal_cost_kaiki_int(u_weight float64, f_wight float64,adj [][]int,node int, max_user int)int{
 	// return 100.0
 	f := FolowerSize(adj,node)
 	if(f==0){
@@ -276,7 +276,7 @@ func Cal_cost_kaiki_int(u_weight float64, f_wight float64,adj [][]int,node int, 
 		return -1
 	}
 	// fmt.Println(math.Log(float64(f))*slope +intercept)
-	return float64(int(math.Log(float64(f))*slope +intercept))
+	return int(math.Round(math.Log(float64(f))*slope +intercept))
 }
 
 func Cal_cost_infl(adj [][]int,node int,  prob_map [2][2][2][2]float64, pop [2]int, interest_list [][]int, assum_list [][]int)float64{
@@ -289,18 +289,22 @@ func Cal_cost_infl(adj [][]int,node int,  prob_map [2][2][2][2]float64, pop [2]i
 	return dist[diff.InfoType_T]
 }
 
-func Cal_cost_infl_int(adj [][]int,node int,  prob_map [2][2][2][2]float64, pop [2]int, interest_list [][]int, assum_list [][]int)float64{
+func Cal_cost_infl_int(adj [][]int,node int,  prob_map [2][2][2][2]float64, pop [2]int, interest_list [][]int, assum_list [][]int)int{
 
 	S_test := make([]int, len(adj))
 	S_test[node] = 2
 	rand.Seed(100)
 	dist := Infl_prop_exp(100, 1000, adj, S_test, prob_map, pop, interest_list, assum_list)
 
-	return float64(int(dist[diff.InfoType_T]))
+	return int(math.Round(dist[diff.InfoType_T]))
 }
 
-func Cal_cost_user100(u_weight float64, f_wight float64,adj [][]int,node int, max_user int)float64{
-	return 100.0
+func Cal_cost_user(u_weight float64, f_wight float64,adj [][]int,node int, max_user int)float64{
+	return 1.0
+}
+
+func Cal_cost_user_int(u_weight float64, f_wight float64,adj [][]int,node int, max_user int)int{
+	return 1
 }
 
 type Users_infl struct {
@@ -317,10 +321,13 @@ func (ui *Users_infl) CopyUsers(users []int){
 	copy(ui.Users,users)
 }
 
-func DP(seed int64, sample_size int, adj [][]int, Seed_set []int, prob_map [2][2][2][2]float64, pop [2]int, interest_list [][]int, assum_list [][]int, ans_len int, Count_true bool, capacity float64, max_user int, OnlyInfler bool, user_weight float64, use_kaiki bool, nick int, non_use_list []int, use_user bool)([]int,float64){
+func DP(seed int64, sample_size int, adj [][]int, Seed_set []int, prob_map [2][2][2][2]float64, pop [2]int, interest_list [][]int, assum_list [][]int, ans_len int, Count_true bool, capacity float64, max_user int, OnlyInfler bool, user_weight float64, use_kaiki bool, nick int, non_use_list []int, use_user bool,use_infl bool)([]int,float64){
 
 	var info_num int
 	var result float64
+	var cost_i float64
+	var cost_i_int int
+	use_int_cost := false
 
 	if Count_true {
 		info_num = 2
@@ -329,11 +336,16 @@ func DP(seed int64, sample_size int, adj [][]int, Seed_set []int, prob_map [2][2
 	}
 
 	var costcal func(float64, float64,[][]int,int,int) float64
+	var costcal_int func(float64, float64,[][]int,int,int) int
 	if use_kaiki{
-		costcal = Cal_cost_kaiki_int
+		use_int_cost = true
+		costcal = Cal_cost_kaiki
 	}else if use_user{
-		costcal = Cal_cost_user100
+		use_int_cost = true
+		costcal = Cal_cost_user
+		costcal_int = Cal_cost_user_int
 	}else{
+		use_int_cost = false
 		costcal = Cal_cost
 	}
 
@@ -360,8 +372,20 @@ func DP(seed int64, sample_size int, adj [][]int, Seed_set []int, prob_map [2][2
 	}
 	for i:=0;i<n;i++{
 		focus_user := onlyiflerlist[i]
-		cost_i := costcal(user_weight,1-user_weight,adj,focus_user,max_user)
-		cost_i_int := int(cost_i)
+		if !use_int_cost{
+			if use_infl{
+				cost_i = Cal_cost_infl(adj,focus_user,prob_map,pop,interest_list,assum_list)
+			}else{
+				cost_i = costcal(user_weight,1-user_weight,adj,focus_user,max_user)
+			}
+			cost_i_int = int(cost_i)
+		}else{
+			if use_infl{
+				cost_i_int =Cal_cost_infl_int(adj,focus_user,prob_map,pop,interest_list,assum_list)
+			}else{
+				cost_i_int = costcal_int(user_weight,1-user_weight,adj,focus_user,max_user)			
+			}
+		}
 		for j:=0;j<l_list;j++{
 			// cost_w := j*nick
 			// fmt.Println("i:",i)
