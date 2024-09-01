@@ -340,6 +340,7 @@ func DP(seed int64, sample_size int, adj [][]int, Seed_set []int, prob_map [2][2
 	if use_kaiki{
 		use_int_cost = true
 		costcal = Cal_cost_kaiki
+		costcal_int = Cal_cost_kaiki_int
 	}else if use_user{
 		use_int_cost = true
 		costcal = Cal_cost_user
@@ -383,7 +384,7 @@ func DP(seed int64, sample_size int, adj [][]int, Seed_set []int, prob_map [2][2
 			if use_infl{
 				cost_i_int =Cal_cost_infl_int(adj,focus_user,prob_map,pop,interest_list,assum_list)
 			}else{
-				cost_i_int = costcal_int(user_weight,1-user_weight,adj,focus_user,max_user)			
+				cost_i_int = costcal_int(user_weight,1-user_weight,adj,focus_user,max_user)
 			}
 		}
 		for j:=0;j<l_list;j++{
@@ -419,7 +420,7 @@ func DP(seed int64, sample_size int, adj [][]int, Seed_set []int, prob_map [2][2
 			}
 		}
 	}
-	// fmt.Println(dp)
+	fmt.Println(dp)
 	return dp[n][l_list-1].Users,dp[n][l_list-1].Infl
 }
 

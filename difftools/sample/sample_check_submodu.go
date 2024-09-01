@@ -884,7 +884,7 @@ func main() {
 		var seed int64 = int64(i)
 		adjFilePath := "Graphs/adj_json1000node.txt"
 		adj,interest_list,assum_list := Make_adj_interest_assum(adjFilePath,seed)
-		use_user := false//DPをコストをuser*100数でやる
+		use_user := false
 		use_infl := true
 		// cal_max_users(adj,7)
 		// use_greedy(adj,interest_list,assum_list,user_weight)
@@ -904,8 +904,16 @@ func main() {
 			cal_max_users(adj,7)
 		}
 		capacity := 302.0
+		//コスト=拡散量用
+		// for j:=1.0;j<7.0;j++{
+		// 	capacity = j*100.0
+		// 	use_DP(adj,interest_list,assum_list,user_weight,capacity,use_user,use_infl,1)
+		// }
+
+		use_user = true
+		use_infl = false
 		for j:=1.0;j<7.0;j++{
-			capacity = j*100.0
+			capacity = j
 			use_DP(adj,interest_list,assum_list,user_weight,capacity,use_user,use_infl,1)
 		}
 		//
