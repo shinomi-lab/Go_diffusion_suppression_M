@@ -308,7 +308,7 @@ func use_greedy(adj [][]int, interest_list [][]int,assum_list [][]int, user_weig
 		return adj, SeedSet_F_strong2,  prob_map , pop_list, interest_list, assum_list
 }
 
-func use_DP(adj [][]int, interest_list [][]int,assum_list [][]int, user_weight float64, capacity float64, use_user bool, use_infl bool, nick int)([][]int, []int, [2][2][2][2]float64, [2]int, [][]int, [][]int){
+func use_DP(adj [][]int, interest_list [][]int,assum_list [][]int, user_weight float64, capacity float64,use_kaiki bool, use_user bool, use_infl bool, nick int)([][]int, []int, [2][2][2][2]float64, [2]int, [][]int, [][]int){
 
 		// var n int = 50
 		// var seesd int64 = 1
@@ -392,7 +392,7 @@ func use_DP(adj [][]int, interest_list [][]int,assum_list [][]int, user_weight f
 
 		s := time.Now()
 		//虚偽情報アリの影響最大化問題の解を求める
-		DP_ans,_ := opt.DP(0,100,adj,SeedSet_F_strong2, prob_map,pop_list,interest_list,assum_list,infler_num,true,capacity,max_user,true, user_weight,!use_user,nick,non_use_list,use_user,use_infl)
+		DP_ans,_ := opt.DP(0,100,adj,SeedSet_F_strong2, prob_map,pop_list,interest_list,assum_list,infler_num,true,capacity,max_user,true, user_weight,use_kaiki,nick,non_use_list,use_user,use_infl)
 		fmt.Println("DP_time:",time.Since(s))
 
 		// DP_ans := DP_user_infl.Users
@@ -417,7 +417,7 @@ func use_DP(adj [][]int, interest_list [][]int,assum_list [][]int, user_weight f
 		// fmt.Println(greedy_ans_v)
 		fmt.Println("cost_sum:",cost_sum)
 		nonF_SeedSet = make([]int, len(adj))//念のため初期化
-		DP_ans,_ = opt.DP(0,100,adj,nonF_SeedSet, prob_map,pop_list,interest_list,assum_list,infler_num,true,capacity,max_user,true, user_weight,!use_user,10,non_use_list,use_user,use_infl)
+		DP_ans,_ = opt.DP(0,100,adj,nonF_SeedSet, prob_map,pop_list,interest_list,assum_list,infler_num,true,capacity,max_user,true, user_weight,use_kaiki,10,non_use_list,use_user,use_infl)
 		fmt.Println("DP_time:",time.Since(s))
 
 		// DP_ans := DP_user_infl.Users
@@ -872,10 +872,12 @@ func sim_submod(adj [][]int, sample_size int, pop_list [2]int, interest_list [][
 }
 
 func main() {
-	for i:=0;i<11;i++{
+	i:=0
+	// for i:=0;i<11;i++{
 		fmt.Println()
 		fmt.Println()
-		user_weight := 0.1*float64(i)
+		// user_weight := 0.1*float64(i)
+		user_weight := 0.0
 		// fmt.Println("user_weight",user_weight)
 		fmt.Println("seed",i)
 		rand.Seed(int64(i))
@@ -912,12 +914,13 @@ func main() {
 
 		use_user = true
 		use_infl = false
+		use_kaiki := false
 		for j:=1.0;j<7.0;j++{
 			capacity = j
-			use_DP(adj,interest_list,assum_list,user_weight,capacity,use_user,use_infl,1)
+			use_DP(adj,interest_list,assum_list,user_weight,capacity,use_kaiki,use_user,use_infl,1)
 		}
 		//
 		// fmt.Println()
 		// use_strict(adj,interest_list,assum_list,user_weight)
-	}
+	// }
 }
