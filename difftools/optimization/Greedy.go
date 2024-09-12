@@ -412,7 +412,8 @@ func DP(seed int64, sample_size int, adj [][]int, Seed_set []int, prob_map [2][2
 			}//resultをdp[i][j].users+onlyiflerlist[i]での拡散にする複数回同じ拡散を調べたくないけど，一旦後回し？
 			// fmt.Println(len(dp),len(dp[i]),dp[i+1][j],i,j)
 			if dp[i][j].Infl < result{
-				dp[i+1][j].Infl = result
+
+				dp[i+1][j].Infl = roundTo(result,4)
 				dp[i+1][j].CopyUsers(dp[i][last_cost].Users)
 				dp[i+1][j].AddUser(focus_user)
 			}else{
@@ -449,4 +450,9 @@ func IsInList(n int, list []int)bool{
 		}
 	}
 	return false
+}
+
+func roundTo(n float64, precision int) float64 {
+    scale := math.Pow(10, float64(precision))
+    return math.Round(n*scale) / scale
 }
