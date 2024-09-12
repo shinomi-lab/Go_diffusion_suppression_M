@@ -915,11 +915,15 @@ func main() {
 		// 	use_DP(adj,interest_list,assum_list,user_weight,capacity,use_user,use_infl,1)
 		// }
 
-		use_user = true
-		use_infl = false
+		use_user = false
+		use_infl = true
 		use_kaiki := false
 		for j:=1.0;j<7.0;j++{
-			capacity = j
+			if use_infl{
+				capacity = j*100
+			}else{
+				capacity = j
+			}
 			use_DP(adj,interest_list,assum_list,user_weight,capacity,use_kaiki,use_user,use_infl,1)
 		}
 		//
