@@ -422,7 +422,7 @@ func DP(seed int64, sample_size int, adj [][]int, Seed_set []int, prob_map [2][2
 			}
 		}
 	}
-	PrintDp(dp)
+	// PrintDp(dp)
 	// os.Exit(0)
 
 	return dp[n][l_list-1].Users,dp[n][l_list-1].Infl

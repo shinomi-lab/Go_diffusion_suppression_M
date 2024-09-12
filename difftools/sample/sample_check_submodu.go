@@ -419,7 +419,7 @@ func use_DP(adj [][]int, interest_list [][]int,assum_list [][]int, user_weight f
 		nonF_SeedSet = make([]int, len(adj))//念のため初期化
 		DP_ans,_ = opt.DP(0,100,adj,nonF_SeedSet, prob_map,pop_list,interest_list,assum_list,infler_num,true,capacity,max_user,true, user_weight,use_kaiki,nick,non_use_list,use_user,use_infl)
 
-		
+
 
 		fmt.Println("DP_time:",time.Since(s))
 
@@ -918,7 +918,7 @@ func main() {
 		use_user = true
 		use_infl = false
 		use_kaiki := false
-		for j:=1.0;j<4.0;j++{
+		for j:=1.0;j<7.0;j++{
 			capacity = j
 			use_DP(adj,interest_list,assum_list,user_weight,capacity,use_kaiki,use_user,use_infl,1)
 		}
