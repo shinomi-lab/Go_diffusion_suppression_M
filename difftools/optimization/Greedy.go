@@ -422,10 +422,16 @@ func DP(seed int64, sample_size int, adj [][]int, Seed_set []int, prob_map [2][2
 			}
 		}
 	}
-	fmt.Println(dp)
-	os.Exit(0)
+	PrintDp(dp)
+	// os.Exit(0)
 
 	return dp[n][l_list-1].Users,dp[n][l_list-1].Infl
+}
+
+func PrintDp(dp [][]Users_infl){
+	for i:=0;i<len(dp);i++{
+		fmt.Println(dp[i])
+	}
 }
 
 func OnlyInflerlist(adj [][]int,non_use_list []int)[]int{

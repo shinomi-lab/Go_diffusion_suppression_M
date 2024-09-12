@@ -915,7 +915,7 @@ func main() {
 		use_user = true
 		use_infl = false
 		use_kaiki := false
-		for j:=3.0;j<4.0;j++{
+		for j:=1.0;j<4.0;j++{
 			capacity = j
 			use_DP(adj,interest_list,assum_list,user_weight,capacity,use_kaiki,use_user,use_infl,1)
 		}
