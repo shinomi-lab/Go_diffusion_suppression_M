@@ -417,7 +417,10 @@ func use_DP(adj [][]int, interest_list [][]int,assum_list [][]int, user_weight f
 		// fmt.Println(greedy_ans_v)
 		fmt.Println("cost_sum:",cost_sum)
 		nonF_SeedSet = make([]int, len(adj))//念のため初期化
-		DP_ans,_ = opt.DP(0,100,adj,nonF_SeedSet, prob_map,pop_list,interest_list,assum_list,infler_num,true,capacity,max_user,true, user_weight,use_kaiki,10,non_use_list,use_user,use_infl)
+		DP_ans,_ = opt.DP(0,100,adj,nonF_SeedSet, prob_map,pop_list,interest_list,assum_list,infler_num,true,capacity,max_user,true, user_weight,use_kaiki,nick,non_use_list,use_user,use_infl)
+
+		
+
 		fmt.Println("DP_time:",time.Since(s))
 
 		// DP_ans := DP_user_infl.Users
