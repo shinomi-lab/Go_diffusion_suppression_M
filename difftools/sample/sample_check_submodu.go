@@ -875,7 +875,7 @@ func sim_submod(adj [][]int, sample_size int, pop_list [2]int, interest_list [][
 }
 
 func main() {
-	i:=0
+	// i:=0
 	for i:=0;i<11;i++{
 		fmt.Println()
 		fmt.Println()
