@@ -355,6 +355,7 @@ func DP(seed int64, sample_size int, adj [][]int, Seed_set []int, prob_map [2][2
 
 	onlyiflerlist := OnlyInflerlist(adj,non_use_list)
 	onlyinfler_num := len(onlyiflerlist)
+	fmt.Println("onlyinfler_num",onlyinfler_num)
 
 	n := onlyinfler_num
 	l_list := int(int(capacity)/nick)+1
