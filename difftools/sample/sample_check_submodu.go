@@ -891,6 +891,7 @@ func main() {
 		adj,interest_list,assum_list := Make_adj_interest_assum(adjFilePath,seed)
 		use_user := false
 		use_infl := true
+		use_kaiki := false
 		// cal_max_users(adj,7)
 		// use_greedy(adj,interest_list,assum_list,user_weight)
 
@@ -914,10 +915,16 @@ func main() {
 		// 	capacity = j*100.0
 		// 	use_DP(adj,interest_list,assum_list,user_weight,capacity,use_user,use_infl,1)
 		// }
+		use_user = true
+		use_infl = false
+		use_kaiki = false
+		capacity = 4.0
+		use_DP(adj,interest_list,assum_list,user_weight,capacity,use_kaiki,use_user,use_infl,1)
+		os.Exit()
 
 		use_user = false
 		use_infl = true
-		use_kaiki := false
+		use_kaiki = false
 		for j:=1.0;j<7.0;j++{
 			if use_infl{
 				capacity = j*100
