@@ -49,7 +49,7 @@ func Make_adj_interest_assum(adjFilePath string, seed int64)([][]int,[][]int,[][
 	return adj,interest_list,assum_list
 }
 
-func user_same(adj [][]int, interest_list [][]int,assum_list [][]int, exit_f bool){
+func user_same(adj [][]int, interest_list [][]int,assum_list [][]int, exit_f bool,use_cost_infl bool){
   var pop_list [2]int
 
 	pop_list[0] = diff.Pop_high
@@ -76,10 +76,15 @@ func user_same(adj [][]int, interest_list [][]int,assum_list [][]int, exit_f boo
   }
   non_use_list[0] = max_user
 
-  opt.SameImpressionCost(0,100,adj,non_use_list, prob_map,pop_list,interest_list,assum_list,true,exit_f)
+	if(use_cost_infl){
+		opt.SameImpressionCostInfl(0,100,adj,non_use_list, prob_map,pop_list,interest_list,assum_list,true,exit_f)
+
+	}else{
+		opt.SameImpressionCost(0,100,adj,non_use_list, prob_map,pop_list,interest_list,assum_list,true,exit_f)
+	}
 }
 
-func follower_same(adj [][]int, interest_list [][]int,assum_list [][]int, exit_f bool){
+func follower_same(adj [][]int, interest_list [][]int,assum_list [][]int, exit_f bool,use_cost_infl bool){
   var pop_list [2]int
 
 	pop_list[0] = diff.Pop_high
@@ -106,11 +111,12 @@ func follower_same(adj [][]int, interest_list [][]int,assum_list [][]int, exit_f
   }
   SeedSet_F[max_user] = 1
 
-  opt.SameImpressionCostFollower(100,adj,SeedSet_F, prob_map,pop_list,interest_list,assum_list,15,16,exit_f)
+  opt.SameImpressionCostFollower(100,adj,SeedSet_F, prob_map,pop_list,interest_list,assum_list,15,16,exit_f,use_cost_infl)
 }
 
 
 func main() {
+	use_cost_infl := true
 	fmt.Println("start cal_sameimpression_cost.go")
   rand.Seed(int64(1))
   var seed int64 = 1
@@ -121,7 +127,7 @@ func main() {
   adj,interest_list,assum_list := Make_adj_interest_assum(adjFilePath,seed)
 	// fmt.Println(len(adj))
 	// os.Exit(0)
-  user_same(adj,interest_list,assum_list,true)
-	follower_same(adj,interest_list,assum_list,true)
+  user_same(adj,interest_list,assum_list,true,use_cost_infl)
+	// follower_same(adj,interest_list,assum_list,true)
 
 }

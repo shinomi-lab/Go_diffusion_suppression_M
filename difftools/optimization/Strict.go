@@ -153,11 +153,16 @@ func Strict2(seed int64, sample_size int , adj [][]int , Seed_set []int, prob_ma
   return ans,max,max2
 }
 
+//public values
 var aaa [][]int
 var saiki int
 var ketteizumi int
 var counter int
-
+var infler_cost_list_copy []int
+var prob_map_copy [2][2][2][2]float64
+var pop_copy [2]int
+var interest_list_copy [][]int
+var assum_list_copy [][]int
 
 //[0,1,1,0,1]→[1,2,4]に型変換して代入
 func printCombination(pattern []int,elems []int, n int) {
@@ -173,10 +178,16 @@ func printCombination(pattern []int,elems []int, n int) {
 
 
 /* n個の要素からr個の要素を選ぶ場合の全パターンを列挙する */
-func combination(adj [][]int,pattern []int, elems []int,n int,undder int,upper int, num_decided int, OnlyInfler bool) {
+func combination(adj [][]int,pattern []int, elems []int,n int,undder int,upper int, num_decided int, OnlyInfler bool, use_cost_infl bool) {
+    var use_get_num_selected func([][]int,[]int,int,[]int) int
 
+    if(use_cost_infl){
+      use_get_num_selected = getNumSelected_infl
+    }else{
+      use_get_num_selected = getNumSelected
+    }
     // fmt.Println("num_decided:",num_decided)
-    num_selected := getNumSelected(adj, pattern, num_decided, elems);
+    num_selected := use_get_num_selected(adj, pattern, num_decided, elems);
 
     // if(num_decided != counter){
     //   counter = num_decided
@@ -199,19 +210,19 @@ func combination(adj [][]int,pattern []int, elems []int,n int,undder int,upper i
 
     /* num_decided個目の要素を"選ばない"場合のパターンを作成 */
     pattern[num_decided] = 0;
-    combination(adj, pattern, elems, n, undder, upper, num_decided + 1,OnlyInfler);
+    combination(adj, pattern, elems, n, undder, upper, num_decided + 1,OnlyInfler,use_cost_infl);
     if(num_selected <= upper){
       /* num_decided個目の要素を"選ぶ"場合のパターンを作成 */
       if(OnlyInfler){
         if(FolowerSize(adj,num_decided) != 0){
           pattern[num_decided] = 1;
-          combination(adj, pattern, elems, n, undder, upper, num_decided + 1,OnlyInfler);
+          combination(adj, pattern, elems, n, undder, upper, num_decided + 1,OnlyInfler,use_cost_infl);
           }else{
             // fmt.Println("除外している")
           }
           }else{
             pattern[num_decided] = 1;
-            combination(adj, pattern, elems, n, undder, upper, num_decided + 1,OnlyInfler);
+            combination(adj, pattern, elems, n, undder, upper, num_decided + 1,OnlyInfler,use_cost_infl);
 
           }
 
@@ -295,6 +306,18 @@ func getNumSelected(adj [][]int, pattern []int,n int,elems []int)int {
   return num_selected;
 }
 
+func getNumSelected_infl(adj [][]int, pattern []int,n int,elems []int)int {
+  /* "選ぶ"と決定された要素の数を計算 */
+  // printf("pattern\t");
+  num_selected := 0;
+  for i := 0; i < n; i++ {
+    if(pattern[i]==1){
+      num_selected += Cal_cost_infl_int(adj ,elems[i],  prob_map_copy , pop_copy , interest_list_copy, assum_list_copy)
+    }
+  }
+  return num_selected;
+}
+
 func getNumSelected2(adj [][]int, pattern []int,n int,elems []int, max_user int, user_weight float64)float64 {
   /* "選ぶ"と決定された要素の数を計算 nownow*/
   // printf("pattern\t");
@@ -358,11 +381,37 @@ func FolowerSize(adj [][]int,node int)int{
 //   return ans
 // }
 
-func CallKumiawase(adj [][]int,under int, upper int, SeedSet []int, OnlyInfler bool)[][]int {
+func CallKumiawase(adj [][]int,under int, upper int, SeedSet []int, OnlyInfler bool, prob_map [2][2][2][2]float64, pop [2]int, interest_list [][]int, assum_list [][]int,use_cost_infl bool)[][]int {
     ketteizumi = 0
     counter = 0
     aaa = make([][]int,0)
     fmt.Println("calling CallKumiawase")
+    //dest := make([]int, len(src))
+    //public関数にコピー(毎回引数にするのがめんどくさいから(値の変更は行わないから宣言の仕方とか変えて中身を変更できないようにした方がよさそう))
+    for i := range prob_map {
+        for j := range prob_map[i] {
+            for k := range prob_map[i][j] {
+                for l := range prob_map[i][j][k] {
+                    prob_map_copy[i][j][k][l] = prob_map[i][j][k][l]
+                }
+            }
+        }
+    }
+    pop_copy[0] = pop[0]
+    pop_copy[1] = pop[1]
+
+    for i := range interest_list {
+        for j := range interest_list[i] {
+          interest_list_copy[i][j] = interest_list[i][j]
+
+        }
+    }
+    for i := range assum_list {
+        for j := range assum_list[i] {
+          assum_list_copy[i][j] = assum_list[i][j]
+
+        }
+    }
     //nを指定することで選べるユーザ数の上限を決めれる
     n := len(adj)
     var a int
@@ -390,7 +439,7 @@ func CallKumiawase(adj [][]int,under int, upper int, SeedSet []int, OnlyInfler b
     pattern := make([]int,n)
     saiki = 0
     fmt.Println("calling combination")
-    combination(adj, pattern, elems, k, under, upper, 0, OnlyInfler);
+    combination(adj, pattern, elems, k, under, upper, 0, OnlyInfler,use_cost_infl);
     // fmt.Println("most important", aaa)
     return aaa
 }
@@ -427,6 +476,43 @@ func CallKumiawase2(adj [][]int,under float64, upper float64, SeedSet []int, Onl
     // fmt.Println("most important", aaa)
     return aaa
 }
+
+// func CallKumiawase_infl(adj [][]int,under int, upper int, SeedSet []int, OnlyInfler bool)[][]int {
+//     ketteizumi = 0
+//     counter = 0
+//     aaa = make([][]int,0)
+//     fmt.Println("calling CallKumiawase")
+//     //nを指定することで選べるユーザ数の上限を決めれる
+//     n := len(adj)
+//     var a int
+//     k := 0
+//     // n = 5
+//     //情報の発信源となりうる(出次数0を消す)ユーザをまとめる　a
+//     //型は[0,2,4,6,7]って感じ
+//     elems := make([]int,0,n)
+//     for i:=0;i<n;i++{
+//       a = 0
+//       if SeedSet[i] == 1{
+//         continue
+//       }
+//       for j:=0;j<len(adj);j++{
+//         if (adj[i][j] != 0){
+//           a = a + 1
+//         }
+//       }
+//       if(a != 0){
+//         elems = append(elems,i)
+//         k = k + 1
+//       }
+//     }
+//     //a End
+//     pattern := make([]int,n)
+//     saiki = 0
+//     fmt.Println("calling combination")
+//     combination(adj, pattern, elems, k, under, upper, 0, OnlyInfler);
+//     // fmt.Println("most important", aaa)
+//     return aaa
+// }
 
 func CallKumiawase_Impression(adj [][]int,under int, upper int, SeedSet []int,  prob_map [2][2][2][2]float64, pop [2]int, interest_list [][]int, assum_list [][]int)[][]int {
     aaa = make([][]int,0)
@@ -768,3 +854,16 @@ func CalFolower(adj [][]int, nodes []int)int{
 
   return ans
 }
+
+// func deepCopy(original [][]int) [][]int {
+//     // コピー先のスライスを作成
+//     copy := make([][]int, len(original))
+//
+//     // 各スライスをループして新しいメモリにコピー
+//     for i := range original {
+//         copy[i] = make([]int, len(original[i]))
+//         copy(copy[i], original[i])
+//     }
+//
+//     return copy
+// }

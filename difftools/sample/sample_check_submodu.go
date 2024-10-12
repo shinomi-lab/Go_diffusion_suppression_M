@@ -920,7 +920,7 @@ func main() {
 		use_kaiki = false
 		capacity = 4.0
 		use_DP(adj,interest_list,assum_list,user_weight,capacity,use_kaiki,use_user,use_infl,1)
-		os.Exit()
+		os.Exit(0)
 
 		use_user = false
 		use_infl = true

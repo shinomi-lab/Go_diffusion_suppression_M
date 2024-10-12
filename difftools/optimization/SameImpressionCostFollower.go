@@ -7,10 +7,12 @@ import (
   "bufio"
 )
 
-func SameImpressionCostFollower(sample_size int, adj [][]int, SeedSet_F []int, prob_map [2][2][2][2]float64, pop [2]int, interest_list [][]int, assum_list [][]int,under int, upper int, exit_f bool){
+func SameImpressionCostFollower(sample_size int, adj [][]int, SeedSet_F []int, prob_map [2][2][2][2]float64, pop [2]int, interest_list [][]int, assum_list [][]int,under int, upper int, exit_f bool,use_cost_infl bool){
   fmt.Println("calling SameImpressionCostFollower")
   zerolist := make([]int,len(adj))
-  sameFollowerList := CallKumiawase(adj, under,upper, SeedSet_F,true)
+  sameFollowerList := CallKumiawase(adj, under,upper, SeedSet_F,true,prob_map,pop,interest_list,assum_list,use_cost_infl)
+	
+
   fmt.Println("start selected suprresion return list",sameFollowerList)
   if exit_f{
     zerolist = SeedSet_F
