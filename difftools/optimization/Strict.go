@@ -356,14 +356,10 @@ func getNumSelected_SameImpression(adj [][]int, pattern []int,n int,elems []int,
 
 func FolowerSize(adj [][]int,node int)int{
   ans := 0
-  for i:=0;i<len(adj);i++{
-    if (adj[node][i] != 0){
-      ans = ans + 1
-    }
+  for _,isEdge := range adj[node]{
+    ans += isEdge
   }
-    // if(ans ==0){
-    //   ans = 10000000000000
-    // }
+
     return ans
 }
 
@@ -788,11 +784,12 @@ func Selected_SuppressionReturnList(adj [][]int, selected_list [][]int, SeedSet 
   return ans
 }
 
-func Selected_Suppression_Maximum(adj [][]int, selected_list [][]int, SeedSet []int,  prob_map [2][2][2][2]float64, pop [2]int, interest_list [][]int, assum_list [][]int)([]int,float64){
+func Selected_Suppression_Maximum(adj [][]int, selected_list [][]int, SeedSet []int,  prob_map [2][2][2][2]float64, pop [2]int, interest_list [][]int, assum_list [][]int)([]int,float64,float64){
   var ans float64
   var max_users []int
   ans = 0
   max := 0.0
+  var diff_f float64
 
   for i:=0;i<len(selected_list);i++{
     S_test := make([]int ,len(SeedSet))
@@ -813,34 +810,26 @@ func Selected_Suppression_Maximum(adj [][]int, selected_list [][]int, SeedSet []
     dist := Infl_prop_exp(-1, 1000, adj, S_test, prob_map, pop, interest_list, assum_list)
 
     ans  = dist[diff.InfoType_T]
+    diff_f = dist[diff.InfoType_F]
     // fmt.Println(ans)
     if(ans>max){
       max = ans
       max_users = make([]int,len(selected))
+      diff_f = dist[diff.InfoType_F]
       _ = copy(max_users,selected)
     }
   }
 
 
-  // for selected := range selected_list{
-  //   for node := range selected{
-  //     if S_test[node] != 0{
-  //       fmt.Println("ERROR in Selected_Suppression")
-  //     }
-  //     S_test[num] = 2
-  //   }
-  //   dist := Infl_prop_exp(0, 1000, adj, S_test, prob_map, pop, interest_list, assum_list)
-  //
-  //   ans  += dist[diff.InfoType_T]
-  // }
+
   if(len(selected_list)==0){
     fmt.Println("selected_list is zero")
     slice := make([]int,0)
-    return slice,0.0
+    return slice,0.0,0.0
   }else{
     // fmt.Println("Selected Suppression return:",ans / float64(len(selected_list)))
     // fmt.Println(max)
-    return max_users,max
+    return max_users,max,diff_f
   }
 }
 

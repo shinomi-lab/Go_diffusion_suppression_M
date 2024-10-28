@@ -6,6 +6,7 @@ import (
 	diff "m/difftools/diffusion"
   "bufio"
 	"math/rand"
+	"time"
 )
 
 func SameImpressionCost(seed int64, sample_size int, adj [][]int, non_use_list []int, prob_map [2][2][2][2]float64, pop [2]int, interest_list [][]int, assum_list [][]int, OnlyInfler bool, exit_f bool){
@@ -140,7 +141,8 @@ func SameImpressionCostInfl(seed int64, sample_size int, adj [][]int, non_use_li
   writer := bufio.NewWriter(file)
 
 	for j := 0; j < n; j++ {
-		j = j + rand.Intn(6)
+		fmt.Println("first loop")
+		j = j + rand.Intn(60)
 		if(j>=n){
 			break
 		}
@@ -163,7 +165,18 @@ func SameImpressionCostInfl(seed int64, sample_size int, adj [][]int, non_use_li
 
 		S_test[j] = info_num
 		for i := 0; i < n; i++ {
-			i = i + rand.Intn(6)
+			currentTime := time.Now()
+
+    // 日付と時間（時分）のフォーマット
+    formattedTime := currentTime.Format("01-02 15:04") // 月-日 時:分
+
+    // フォーマットした時間を表示
+
+			fmt.Println("second loop",formattedTime)
+			i = i + rand.Intn(60)
+			if (i == j){
+				continue
+			}
 			if(i>=n){
 				break
 			}
@@ -186,7 +199,10 @@ func SameImpressionCostInfl(seed int64, sample_size int, adj [][]int, non_use_li
 
 			S_test[i] = info_num
 			for k := 0; k < n; k++ {
-				k = k + rand.Intn(6)
+				k = k + rand.Intn(60)
+				if(k==j || k == i){
+					continue
+				}
 				if(k>=n){
 					break
 				}
@@ -220,7 +236,7 @@ func SameImpressionCostInfl(seed int64, sample_size int, adj [][]int, non_use_li
 
 
     // ファイルに書き込む
-    _, err = writer.WriteString(fmt.Sprintf("%d",j)+","+fmt.Sprintf("%d",Cal_cost_infl_int(adj,j,prob_map,pop,interest_list,assum_list))+","+fmt.Sprintf("%f",result)+"\n")
+    _, err = writer.WriteString(fmt.Sprintf("%d",j)+","+fmt.Sprintf("%d",Cal_cost_infl_int(adj,j,prob_map,pop,interest_list,assum_list)+Cal_cost_infl_int(adj,i,prob_map,pop,interest_list,assum_list)+Cal_cost_infl_int(adj,k,prob_map,pop,interest_list,assum_list))+","+fmt.Sprintf("%f",result)+"\n")
     // _, err = file.WriteString("aaaaa\n")
     // fmt.Println("aa")
     if err != nil {
