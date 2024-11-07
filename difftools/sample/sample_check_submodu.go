@@ -369,6 +369,7 @@ func use_DP(adj [][]int, interest_list [][]int,assum_list [][]int, user_weight f
 			non_use_list[0] = max_user
 		}else if (S_f_type == 2){
 			num2 := 0
+			num3 := 0
 			for focus_user,slice := range adj{
 				num := 0
 				for _,edge := range slice{
@@ -381,7 +382,12 @@ func use_DP(adj [][]int, interest_list [][]int,assum_list [][]int, user_weight f
 				if num >20 && num < 30 {
 					if num2 % 20 == 0{//個数調整
 						SeedSet_F_strong2[focus_user] = 1//虚偽情報の発信源を定義
-						non_use_list[0] = focus_user
+						if num3 == 0{
+							non_use_list[0] = focus_user
+						}else{
+							non_use_list = append(non_use_list,focus_user)
+						}
+						num3 ++
 					}
 					num2 ++
 				}
@@ -986,7 +992,7 @@ func main() {
 		// fmt.Println()
 		// use_strict(adj,interest_list,assum_list,user_weight)
 	}
-	for i:=3;i<11;i++{
+	for i:=3;i<9;i++{
 		fmt.Println()
 		fmt.Println()
 		// user_weight := 0.1*float64(i)
@@ -1057,7 +1063,7 @@ func main() {
 		use_infl = true
 		use_kaiki = false
 		S_f_type = 2
-		for j:=1.0;j<7.0;j++{
+		for j:=1.0;j<5.0;j++{
 			if use_infl{
 				capacity = j*100
 			}else{

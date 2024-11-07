@@ -26,54 +26,58 @@ func (ui *Users_infl) CopyUsers(users []int){
 
 
 func main(){
-  cost := []int{2,1,3,2,1,5}
-  value := []int{3,2,6,1,3,85}
+  errMsg := "これはエラーメッセージです"
+  fmt.Printf("\033[31m%s\033[0m\n", errMsg)  // 赤色でエラーメッセージを出力
 
-  n := 6
-  dp := make([][]Users_infl,n+1)
-  l_list := 8
-	for i:=0;i<n+1;i++{
-		// dp[i] = make([]float64,l_list)
-		dp[i] = make([]Users_infl,l_list)
-	}
-	// fmt.Println(dp)
-	// os.Exit(0)
-	for w:=0;w<l_list;w++{
-		dp[0][w].Infl = 0
-	}
-	for i:=0;i<n;i++{
-		// focus_user := onlyiflerlist[i]
-		cost_i := cost[i]
-		cost_i_int := int(cost_i)
-		for j:=0;j<l_list;j++{
-
-			if j < cost_i_int{//大きすぎると不可能
-        dp[i+1][j].Infl = dp[i][j].Infl
-				dp[i+1][j].CopyUsers(dp[i][j].Users)
-				continue
-			}
-			// _ = copy(S, Seed_set)//初期化
-			last_cost := j-cost_i_int
-
-      result := dp[i][last_cost].Infl + value[i]
-
-      if(i == 2 && j== 1){
-        fmt.Println("aaaaaaaaaaaaaaaa")
-        fmt.Println(dp[i][j].Infl)
-        fmt.Println(result)
-      }
-			if dp[i][j].Infl < result{
-				dp[i+1][j].Infl = result
-				dp[i+1][j].CopyUsers(dp[i][last_cost].Users)
-				dp[i+1][j].AddUser(i)
-			}else{
-				dp[i+1][j].Infl = dp[i][j].Infl
-				dp[i+1][j].CopyUsers(dp[i][j].Users)
-			}
-		}
-	}
-
-	fmt.Println(dp[n][7].Infl)
+  // os.Exit(0)
+  // cost := []int{2,1,3,2,1,5}
+  // value := []int{3,2,6,1,3,85}
+  //
+  // n := 6
+  // dp := make([][]Users_infl,n+1)
+  // l_list := 8
+	// for i:=0;i<n+1;i++{
+	// 	// dp[i] = make([]float64,l_list)
+	// 	dp[i] = make([]Users_infl,l_list)
+	// }
+	// // fmt.Println(dp)
+	// // os.Exit(0)
+	// for w:=0;w<l_list;w++{
+	// 	dp[0][w].Infl = 0
+	// }
+	// for i:=0;i<n;i++{
+	// 	// focus_user := onlyiflerlist[i]
+	// 	cost_i := cost[i]
+	// 	cost_i_int := int(cost_i)
+	// 	for j:=0;j<l_list;j++{
+  //
+	// 		if j < cost_i_int{//大きすぎると不可能
+  //       dp[i+1][j].Infl = dp[i][j].Infl
+	// 			dp[i+1][j].CopyUsers(dp[i][j].Users)
+	// 			continue
+	// 		}
+	// 		// _ = copy(S, Seed_set)//初期化
+	// 		last_cost := j-cost_i_int
+  //
+  //     result := dp[i][last_cost].Infl + value[i]
+  //
+  //     if(i == 2 && j== 1){
+  //       fmt.Println("aaaaaaaaaaaaaaaa")
+  //       fmt.Println(dp[i][j].Infl)
+  //       fmt.Println(result)
+  //     }
+	// 		if dp[i][j].Infl < result{
+	// 			dp[i+1][j].Infl = result
+	// 			dp[i+1][j].CopyUsers(dp[i][last_cost].Users)
+	// 			dp[i+1][j].AddUser(i)
+	// 		}else{
+	// 			dp[i+1][j].Infl = dp[i][j].Infl
+	// 			dp[i+1][j].CopyUsers(dp[i][j].Users)
+	// 		}
+	// 	}
+	// }
+  //
+	// fmt.Println(dp[n][7].Infl)
 
 
 
