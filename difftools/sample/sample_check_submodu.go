@@ -907,9 +907,9 @@ func sim_submod(adj [][]int, sample_size int, pop_list [2]int, interest_list [][
 }
 
 func main() {
-	// i:=0
-	i := 2
-	{
+
+
+	for i:=0;i<3;i++{
 		fmt.Println()
 		fmt.Println()
 		// user_weight := 0.1*float64(i)
@@ -927,32 +927,7 @@ func main() {
 		use_kaiki := false
 		S_f_type := 1
 		// num2 := 0
-		// for i,slice := range adj{
-		// 	num := 0
-		// 	for _,edge := range slice{
-		// 		num += edge
-		// 		if edge >1 {
-		// 			fmt.Println("error")
-		// 			os.Exit(0)
-		// 		}
-		// 	}
-		// 	if num >20 && num < 30 {
-		// 		num2 ++
-		// 		fmt.Println(i,num)
-		// 		_ = i
-		// 	}
-		// }
-		// fmt.Println("num2:",num2)
-		// os.Exit(0)
-		// cal_max_users(adj,7)
-		// use_greedy(adj,interest_list,assum_list,user_weight)
 
-		// use_greedy(adjFilePath)
-		// use_strict(adjFilePath)
-		// adjFilePath = "Graphs/adj_json100node.txt"
-		// adj,interest_list,assum_list = Make_adj_interest_assum(adjFilePath,seed)
-		// use_greedy(adj,interest_list,assum_list,user_weight)
-		// use_strict(adj,interest_list,assum_list,user_weight)
 
 		// adjFilePath = "Graphs/adj_json50node.txt"
 		adjFilePath = "adj_jsonTwitterInteractionUCongress.txt"
@@ -965,98 +940,7 @@ func main() {
 		}
 		capacity := 302.0
 		//コスト=拡散量用
-		// for j:=1.0;j<7.0;j++{
-		// 	capacity = j*100.0
-		// 	use_DP(adj,interest_list,assum_list,user_weight,capacity,use_user,use_infl,1)
-		// }
-		// use_user = true
-		// use_infl = false
-		// use_kaiki = false
-		// capacity = 4.0
-		// use_DP(adj,interest_list,assum_list,user_weight,capacity,use_kaiki,use_user,use_infl,1)
-		// os.Exit(0)
 
-		use_user = false
-		use_infl = true
-		use_kaiki = false
-		S_f_type = 2
-		for j:=6.0;j<7.0;j++{
-			if use_infl{
-				capacity = j*100
-			}else{
-				capacity = j
-			}
-			use_DP(adj,interest_list,assum_list,user_weight,capacity,use_kaiki,use_user,use_infl,1,S_f_type)
-		}
-		//
-		// fmt.Println()
-		// use_strict(adj,interest_list,assum_list,user_weight)
-	}
-	for i:=3;i<9;i++{
-		fmt.Println()
-		fmt.Println()
-		// user_weight := 0.1*float64(i)
-		user_weight := 0.0
-		// fmt.Println("user_weight",user_weight)
-		fmt.Println("seed",i)
-		rand.Seed(int64(i))
-
-
-		var seed int64 = int64(i)
-		adjFilePath := "adj_jsonTwitterInteractionUCongress.txt"
-		adj,interest_list,assum_list := Make_adj_interest_assum(adjFilePath,seed)
-		use_user := false
-		use_infl := true
-		use_kaiki := false
-		S_f_type := 1
-		// num2 := 0
-		// for i,slice := range adj{
-		// 	num := 0
-		// 	for _,edge := range slice{
-		// 		num += edge
-		// 		if edge >1 {
-		// 			fmt.Println("error")
-		// 			os.Exit(0)
-		// 		}
-		// 	}
-		// 	if num >20 && num < 30 {
-		// 		num2 ++
-		// 		fmt.Println(i,num)
-		// 		_ = i
-		// 	}
-		// }
-		// fmt.Println("num2:",num2)
-		// os.Exit(0)
-		// cal_max_users(adj,7)
-		// use_greedy(adj,interest_list,assum_list,user_weight)
-
-		// use_greedy(adjFilePath)
-		// use_strict(adjFilePath)
-		// adjFilePath = "Graphs/adj_json100node.txt"
-		// adj,interest_list,assum_list = Make_adj_interest_assum(adjFilePath,seed)
-		// use_greedy(adj,interest_list,assum_list,user_weight)
-		// use_strict(adj,interest_list,assum_list,user_weight)
-
-		// adjFilePath = "Graphs/adj_json50node.txt"
-		adjFilePath = "adj_jsonTwitterInteractionUCongress.txt"
-		adj,interest_list,assum_list = Make_adj_interest_assum(adjFilePath,seed)
-		fmt.Println("len adj",len(adj))
-		// os.Exit(0)
-		if i == 0{
-
-			cal_max_users(adj,7)
-		}
-		capacity := 302.0
-		//コスト=拡散量用
-		// for j:=1.0;j<7.0;j++{
-		// 	capacity = j*100.0
-		// 	use_DP(adj,interest_list,assum_list,user_weight,capacity,use_user,use_infl,1)
-		// }
-		// use_user = true
-		// use_infl = false
-		// use_kaiki = false
-		// capacity = 4.0
-		// use_DP(adj,interest_list,assum_list,user_weight,capacity,use_kaiki,use_user,use_infl,1)
 		// os.Exit(0)
 
 		use_user = false
