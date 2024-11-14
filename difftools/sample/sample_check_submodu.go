@@ -414,7 +414,7 @@ func use_DP(adj [][]int, interest_list [][]int,assum_list [][]int, user_weight f
 		fmt.Println("start_DP")
 		// greedy_ans1, _, _ := opt.Greedy(0,100,adj,SeedSet_F_strong2, prob_map,pop_list,interest_list,assum_list,5,true,1000)
 
-		cost_sum := 0.0
+		cost_sum := 0
 		// for j:=0;j<len(greedy_ans1);j++{
 		// 	cost_sum += opt.Cal_cost_kaiki(user_weight,1-user_weight,adj, greedy_ans1[j], max_user)
 		// }
@@ -432,15 +432,15 @@ func use_DP(adj [][]int, interest_list [][]int,assum_list [][]int, user_weight f
 			// DP_ans := DP_user_infl.Users
 
 			for j:=0;j<len(DP_ans);j++{
-				cost_sum += opt.Cal_cost_kaiki(user_weight,1-user_weight,adj, DP_ans[j], max_user)
+				cost_sum += opt.Cal_cost_infl_int(adj,DP_ans[j],prob_map,pop_list,interest_list,assum_list)
 			}
 			DP_ans2 := make([][]int,0)
 			DP_ans2 = append(DP_ans2,DP_ans)
-			SeedSet_F_strong2 = make([]int, len(adj))
-			SeedSet_F_strong2[max_user] = 1
+			// SeedSet_F_strong2 = make([]int, len(adj))
+			// SeedSet_F_strong2[max_user] = 1
 			_,test_DP_ans_v,test_DP_ans_fv := opt.Selected_Suppression_Maximum(adj,DP_ans2, SeedSet_F_strong2,  prob_map , pop_list, interest_list, assum_list)
-			SeedSet_F_strong2 = make([]int, len(adj))//念のため初期化
-			SeedSet_F_strong2[max_user] = 1
+			// SeedSet_F_strong2 = make([]int, len(adj))//念のため初期化
+			// SeedSet_F_strong2[max_user] = 1
 
 			fmt.Println("虚偽情報アリの解",DP_ans,test_DP_ans_v,test_DP_ans_fv)
 			nonF_SeedSet := make([]int, len(adj))
@@ -463,7 +463,7 @@ func use_DP(adj [][]int, interest_list [][]int,assum_list [][]int, user_weight f
 
 		cost_sum = 0
 		for j:=0;j<len(DP_ans);j++{
-			cost_sum += opt.Cal_cost_kaiki(user_weight,1-user_weight,adj, DP_ans[j], max_user)
+			cost_sum += opt.Cal_cost_infl_int(adj,DP_ans[j],prob_map,pop_list,interest_list,assum_list)
 		}
 		DP_ans2 := make([][]int,0)
 		DP_ans2 = append(DP_ans2,DP_ans)
@@ -913,7 +913,7 @@ func sim_submod(adj [][]int, sample_size int, pop_list [2]int, interest_list [][
 func main() {
 
 
-	for i:=2;i<3;i++{
+	for i:=0;i<9;i++{
 		fmt.Println()
 		fmt.Println()
 		// user_weight := 0.1*float64(i)
@@ -951,13 +951,13 @@ func main() {
 		use_infl = true
 		use_kaiki = false
 		S_f_type = 2
-		for j:=4.0;j<5.0;j++{
+		for j:=1.0;j<5.0;j++{
 			if use_infl{
 				capacity = j*100
 			}else{
 				capacity = j
 			}
-			use_DP(adj,interest_list,assum_list,user_weight,capacity,use_kaiki,use_user,use_infl,1,S_f_type,true)
+			use_DP(adj,interest_list,assum_list,user_weight,capacity,use_kaiki,use_user,use_infl,1,S_f_type,false)
 		}
 		//
 		// fmt.Println()
