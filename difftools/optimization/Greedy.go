@@ -306,6 +306,13 @@ func Cal_cost_user(u_weight float64, f_wight float64,adj [][]int,node int, max_u
 func Cal_cost_user_int(u_weight float64, f_wight float64,adj [][]int,node int, max_user int)int{
 	return 1
 }
+func Cal_cost_follower(u_weight float64, f_wight float64,adj [][]int,node int, max_user int)float64{
+	return float64(FolowerSize(adj,node))
+}
+
+func Cal_cost_follower_int(u_weight float64, f_wight float64,adj [][]int,node int, max_user int)int{
+	return FolowerSize(adj,node)
+}
 
 type Users_infl struct {
     Infl float64
@@ -321,7 +328,7 @@ func (ui *Users_infl) CopyUsers(users []int){
 	copy(ui.Users,users)
 }
 
-func DP(seed int64, sample_size int, adj [][]int, Seed_set []int, prob_map [2][2][2][2]float64, pop [2]int, interest_list [][]int, assum_list [][]int, ans_len int, Count_true bool, capacity float64, max_user int, OnlyInfler bool, user_weight float64, use_kaiki bool, nick int, non_use_list []int, use_user bool,use_infl bool)([]int,float64){
+func DP(seed int64, sample_size int, adj [][]int, Seed_set []int, prob_map [2][2][2][2]float64, pop [2]int, interest_list [][]int, assum_list [][]int, ans_len int, Count_true bool, capacity float64, max_user int, OnlyInfler bool, user_weight float64, use_kaiki bool,use_follower bool, nick int, non_use_list []int, use_user bool,use_infl bool)([]int,float64){
 
 	var info_num int
 	var result float64
@@ -345,6 +352,10 @@ func DP(seed int64, sample_size int, adj [][]int, Seed_set []int, prob_map [2][2
 		use_int_cost = true
 		costcal = Cal_cost_user
 		costcal_int = Cal_cost_user_int
+	}else if use_follower{
+		use_int_cost = true
+		costcal = Cal_cost_follower
+		costcal_int = Cal_cost_follower_int
 	}else{
 		use_int_cost = false
 		costcal = Cal_cost

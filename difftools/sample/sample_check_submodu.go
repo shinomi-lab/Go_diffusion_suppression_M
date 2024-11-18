@@ -309,7 +309,7 @@ func use_greedy(adj [][]int, interest_list [][]int,assum_list [][]int, user_weig
 		return adj, SeedSet_F_strong2,  prob_map , pop_list, interest_list, assum_list
 }
 
-func use_DP(adj [][]int, interest_list [][]int,assum_list [][]int, user_weight float64, capacity float64,use_kaiki bool, use_user bool, use_infl bool, nick int, S_f_type int, only_last bool)([][]int, []int, [2][2][2][2]float64, [2]int, [][]int, [][]int){
+func use_DP(adj [][]int, interest_list [][]int,assum_list [][]int, user_weight float64, capacity float64,use_kaiki bool, use_user bool, use_infl bool,use_follower bool, nick int, S_f_type int, only_last bool)([][]int, []int, [2][2][2][2]float64, [2]int, [][]int, [][]int){
 
 		// var n int = 50
 		// var seesd int64 = 1
@@ -426,13 +426,17 @@ func use_DP(adj [][]int, interest_list [][]int,assum_list [][]int, user_weight f
 		//虚偽情報アリの影響最大化問題の解を求める
 		// DP_ans2 := make([][]int,0)
 		if(!only_last){
-			DP_ans,_ := opt.DP(0,100,adj,SeedSet_F_strong2, prob_map,pop_list,interest_list,assum_list,infler_num,true,capacity,max_user,true, user_weight,use_kaiki,nick,non_use_list,use_user,use_infl)
+			DP_ans,_ := opt.DP(0,100,adj,SeedSet_F_strong2, prob_map,pop_list,interest_list,assum_list,infler_num,true,capacity,max_user,true, user_weight,use_kaiki,use_follower,nick,non_use_list,use_user,use_infl)
 			fmt.Println("DP_time:",time.Since(s))
 
 			// DP_ans := DP_user_infl.Users
 
 			for j:=0;j<len(DP_ans);j++{
-				cost_sum += opt.Cal_cost_infl_int(adj,DP_ans[j],prob_map,pop_list,interest_list,assum_list)
+				if use_infl{
+					cost_sum += opt.Cal_cost_infl_int(adj,DP_ans[j],prob_map,pop_list,interest_list,assum_list)
+				}else if use_follower{
+					cost_sum += opt.Cal_cost_follower_int(user_weight,1-user_weight,adj,DP_ans[j],max_user)
+				}
 			}
 			DP_ans2 := make([][]int,0)
 			DP_ans2 = append(DP_ans2,DP_ans)
@@ -453,7 +457,7 @@ func use_DP(adj [][]int, interest_list [][]int,assum_list [][]int, user_weight f
 		// fmt.Println(greedy_ans_v)
 		fmt.Println("cost_sum:",cost_sum)
 		nonF_SeedSet := make([]int, len(adj))//念のため初期化
-		DP_ans,_ := opt.DP(0,100,adj,nonF_SeedSet, prob_map,pop_list,interest_list,assum_list,infler_num,true,capacity,max_user,true, user_weight,use_kaiki,nick,non_use_list,use_user,use_infl)
+		DP_ans,_ := opt.DP(0,100,adj,nonF_SeedSet, prob_map,pop_list,interest_list,assum_list,infler_num,true,capacity,max_user,true, user_weight,use_kaiki,use_follower,nick,non_use_list,use_user,use_infl)
 
 
 
@@ -927,8 +931,9 @@ func main() {
 		adjFilePath := "adj_jsonTwitterInteractionUCongress.txt"
 		adj,interest_list,assum_list := Make_adj_interest_assum(adjFilePath,seed)
 		use_user := false
-		use_infl := true
+		use_infl := false
 		use_kaiki := false
+		use_follower := true
 		S_f_type := 1
 		// num2 := 0
 
@@ -948,16 +953,19 @@ func main() {
 		// os.Exit(0)
 
 		use_user = false
-		use_infl = true
+		use_infl = false
 		use_kaiki = false
+		use_follower = true
 		S_f_type = 2
 		for j:=1.0;j<5.0;j++{
 			if use_infl{
 				capacity = j*100
-			}else{
+			}else if use_follower{
+				capacity = j*30
+				}else{
 				capacity = j
 			}
-			use_DP(adj,interest_list,assum_list,user_weight,capacity,use_kaiki,use_user,use_infl,1,S_f_type,false)
+			use_DP(adj,interest_list,assum_list,user_weight,capacity,use_kaiki,use_user,use_infl,use_follower,1,S_f_type,false)
 		}
 		//
 		// fmt.Println()
