@@ -12,21 +12,21 @@ edges_path = "twitter_combined/twitter_combined.txt"  # 実際のファイルパ
 G = load_twitter_ego_graph(edges_path)
 
 # グラフの基本情報を表示
-print(nx.info(G))
+print(G)
 
 # グラフの可視化（matplotlibが必要）
 import matplotlib.pyplot as plt
-nx.draw(G, with_labels=False, node_size=10)
-plt.show()
+#nx.draw(G, with_labels=False, node_size=10)
+#plt.show()
 
-print("edges:",len(G.edges))
-print("radius",nx.radius(G))
-print("diameter",nx.diameter(G))
-print("argmax:",max_index)
-print("max:",np.max(list2))
-print("ave:",np.mean(list2))
-print("min:",np.min(list2))
-print("all:",list2)
+#print("edges:",len(G.edges))
+#print("radius",nx.radius(G))
+#print("diameter",nx.diameter(G))
+#print("argmax:",max_index)
+#print("max:",np.max(list2))
+#print("ave:",np.mean(list2))
+#print("min:",np.min(list2))
+#print("all:",list2)
 
 import numpy as np
 
@@ -43,7 +43,7 @@ plt.loglog(nonzero_degrees, nonzero_frequency, marker="o", linestyle="none")
 plt.title("Log-Log Degree Distribution")
 plt.xlabel("Degree (log scale)")
 plt.ylabel("Frequency (log scale)")
-plt.show()
+#plt.show()
 
 from scipy.optimize import curve_fit
 
