@@ -104,6 +104,12 @@ plt.ylabel("Frequency (log scale)")
 plt.legend()
 plt.show()
 
+global_clustering = nx.transitivity(G)
+print(f"グローバルクラスター係数: {global_clustering}")
+
+average_clustering = nx.average_clustering(G)
+print(f"平均クラスター係数: {average_clustering}")
+
 # adj = to_np_adjmat(G)
 #Golangへ無理やり持っていくように書いたけど使わない
 # adj = adj.astype(np.int32)
