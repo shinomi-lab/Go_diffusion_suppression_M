@@ -5,6 +5,13 @@ def load_twitter_ego_graph(edges_file):
     G = nx.read_edgelist(edges_file)  # NetworkXのread_edgelistを使用
     return G
 
+def to_np_adjmat(G):
+    np_adjmat = nx.to_numpy_array(G)
+    # print(np_adjmat)
+
+    return np_adjmat
+
+
 # エッジリストファイルのパスを指定
 edges_path = "twitter_combined/twitter_combined.txt"  # 実際のファイルパスに変更
 
@@ -96,3 +103,15 @@ print(f"グローバルクラスター係数: {global_clustering}")
 
 average_clustering = nx.average_clustering(G)
 print(f"平均クラスター係数: {average_clustering}")
+
+import pandas as pd
+
+adj = to_np_adjmat(G)
+#Golangへ無理やり持っていくように書いた
+adj = adj.astype(np.int32)
+
+print(type(adj))
+# print(adj.shape)
+df = pd.DataFrame(adj)
+
+df.to_json("adj_json_egoTwitter_kirinuki.txt")
