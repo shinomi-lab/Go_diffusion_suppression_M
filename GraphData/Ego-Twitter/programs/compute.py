@@ -20,12 +20,19 @@ G = load_twitter_ego_graph(edges_path)
 #切り抜き
 print("以降　切り抜き")
 import random
-remaining_nodes = random.sample(list(G.nodes()), k=1500)
+remaining_nodes = random.sample(list(G.nodes()), k=3000)
 
 # 指定したノード以外を削除
 G_sub = G.subgraph(remaining_nodes).copy()
 
 G = G_sub
+
+# 巨大連結成分を取得
+largest_cc = max(nx.connected_components(G), key=len)
+
+# 残すノードを指定
+G = G.subgraph(largest_cc).copy()
+
 
 # print(f"元のグラフのノード数: {G.number_of_nodes()}")
 print(f"部分グラフのノード数: {G_sub.number_of_nodes()}")
