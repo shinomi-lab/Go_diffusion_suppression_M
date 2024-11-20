@@ -11,6 +11,25 @@ edges_path = "twitter_combined/twitter_combined.txt"  # 実際のファイルパ
 # グラフを読み込み
 G = load_twitter_ego_graph(edges_path)
 
+global_clustering = nx.transitivity(G)
+print(f"グローバルクラスター係数: {global_clustering}")
+
+average_clustering = nx.average_clustering(G)
+print(f"平均クラスター係数: {average_clustering}")
+
+#切り抜き
+print("以降　切り抜き")
+remaining_nodes = random.sample(list(G.nodes()), k=1500)
+
+# 指定したノード以外を削除
+G_sub = G.subgraph(remaining_nodes).copy()
+
+G = G_sub
+
+# print(f"元のグラフのノード数: {G.number_of_nodes()}")
+print(f"部分グラフのノード数: {G_sub.number_of_nodes()}")
+
+
 # グラフの基本情報を表示
 print(G)
 
@@ -62,3 +81,9 @@ plt.xlabel("Degree (log scale)")
 plt.ylabel("Frequency (log scale)")
 plt.legend()
 plt.show()
+
+global_clustering = nx.transitivity(G)
+print(f"グローバルクラスター係数: {global_clustering}")
+
+average_clustering = nx.average_clustering(G)
+print(f"平均クラスター係数: {average_clustering}")
