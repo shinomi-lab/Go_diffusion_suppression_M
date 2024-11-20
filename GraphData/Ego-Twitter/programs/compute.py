@@ -96,7 +96,7 @@ plt.title("Power-Law Fit")
 plt.xlabel("Degree (log scale)")
 plt.ylabel("Frequency (log scale)")
 plt.legend()
-plt.show()
+#plt.show()
 
 global_clustering = nx.transitivity(G)
 print(f"グローバルクラスター係数: {global_clustering}")
