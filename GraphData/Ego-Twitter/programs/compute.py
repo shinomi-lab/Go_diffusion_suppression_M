@@ -11,14 +11,15 @@ edges_path = "twitter_combined/twitter_combined.txt"  # 実際のファイルパ
 # グラフを読み込み
 G = load_twitter_ego_graph(edges_path)
 
-global_clustering = nx.transitivity(G)
-print(f"グローバルクラスター係数: {global_clustering}")
+#global_clustering = nx.transitivity(G)
+#print(f"グローバルクラスター係数: {global_clustering}")
 
-average_clustering = nx.average_clustering(G)
-print(f"平均クラスター係数: {average_clustering}")
+#average_clustering = nx.average_clustering(G)
+#print(f"平均クラスター係数: {average_clustering}")
 
 #切り抜き
 print("以降　切り抜き")
+import random
 remaining_nodes = random.sample(list(G.nodes()), k=1500)
 
 # 指定したノード以外を削除
