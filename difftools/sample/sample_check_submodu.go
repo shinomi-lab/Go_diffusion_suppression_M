@@ -928,7 +928,8 @@ func main() {
 
 
 		var seed int64 = int64(i)
-		adjFilePath := "adj_jsonTwitterInteractionUCongress.txt"
+		// adjFilePath := "adj_jsonTwitterInteractionUCongress.txt"
+		adjFilePath := "adj_json_egoTwitter_kirinuki.txt"
 		adj,interest_list,assum_list := Make_adj_interest_assum(adjFilePath,seed)
 		use_user := false
 		use_infl := false
@@ -939,7 +940,8 @@ func main() {
 
 
 		// adjFilePath = "Graphs/adj_json50node.txt"
-		adjFilePath = "adj_jsonTwitterInteractionUCongress.txt"
+		// adjFilePath = "adj_jsonTwitterInteractionUCongress.txt"
+		adjFilePath = "adj_json_egoTwitter_kirinuki.txt"
 		adj,interest_list,assum_list = Make_adj_interest_assum(adjFilePath,seed)
 		fmt.Println("len adj",len(adj))
 		// os.Exit(0)
@@ -952,10 +954,10 @@ func main() {
 
 		// os.Exit(0)
 
-		use_user = false
+		use_user = true
 		use_infl = false
 		use_kaiki = false
-		use_follower = true
+		use_follower = false
 		S_f_type = 2
 		for j:=1.0;j<5.0;j++{
 			if use_infl{
