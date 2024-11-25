@@ -436,6 +436,8 @@ func use_DP(adj [][]int, interest_list [][]int,assum_list [][]int, user_weight f
 					cost_sum += opt.Cal_cost_infl_int(adj,DP_ans[j],prob_map,pop_list,interest_list,assum_list)
 				}else if use_follower{
 					cost_sum += opt.Cal_cost_follower_int(user_weight,1-user_weight,adj,DP_ans[j],max_user)
+				}else{
+					cost_sum += opt.Cal_cost_infl_int(adj,DP_ans[j],prob_map,pop_list,interest_list,assum_list)
 				}
 			}
 			DP_ans2 := make([][]int,0)
@@ -958,10 +960,10 @@ func main() {
 		use_infl = false
 		use_kaiki = false
 		use_follower = false
-		S_f_type = 2
+		S_f_type = 1
 		for j:=1.0;j<5.0;j++{
 			if use_infl{
-				capacity = j*100
+				capacity = j*15
 			}else if use_follower{
 				capacity = j*30
 				}else{
