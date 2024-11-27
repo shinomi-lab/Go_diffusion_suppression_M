@@ -380,7 +380,9 @@ func use_DP(adj [][]int, interest_list [][]int,assum_list [][]int, user_weight f
 					}
 				}
 				if num >20 && num < 30 {
-					if num2 % 20 == 0{//個数調整
+				// if num >20  {
+					// fmt.Println(focus_user,num)
+					if num2 % 2 == 0{//個数調整
 						SeedSet_F_strong2[focus_user] = 1//虚偽情報の発信源を定義
 						if num3 == 0{
 							non_use_list[0] = focus_user
@@ -393,6 +395,8 @@ func use_DP(adj [][]int, interest_list [][]int,assum_list [][]int, user_weight f
 				}
 			}
 		}
+
+
 
 
 
@@ -960,8 +964,8 @@ func main() {
 		use_infl = false
 		use_kaiki = false
 		use_follower = false
-		S_f_type = 1
-		for j:=1.0;j<5.0;j++{
+		S_f_type = 2
+		for j:=1.0;j<10.0;j++{
 			if use_infl{
 				capacity = j*15
 			}else if use_follower{
