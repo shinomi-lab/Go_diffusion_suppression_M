@@ -945,7 +945,7 @@ func main() {
 		S_f_type = 2
 		for j := 1.0; j < 10.0; j++ {
 			if use_infl {
-				capacity = j * 15
+				capacity = j * 5
 			} else if use_follower {
 				capacity = j * 30
 			} else {
