@@ -340,7 +340,7 @@ func use_DP(adj [][]int, interest_list [][]int, assum_list [][]int, user_weight 
 		SeedSet_F_strong2[max_user] = 1 //虚偽情報の発信源を定義
 		non_use_list[0] = max_user
 
-		}else if S_f_type == 2 {
+	} else if S_f_type == 2 {
 
 		num2 := 0
 
@@ -392,20 +392,19 @@ func use_DP(adj [][]int, interest_list [][]int, assum_list [][]int, user_weight 
 
 	}
 
-		//人数を流動的にして拡散を調べている
-			//	総フォロワー数を固定できていない
-		//拡散可能な人数を調べている
-		infler_num := 0
-		// OnlyInfler := true
-		for j:=0;j<len(adj);j++{
-			for k:=0;k<len(adj);k++{
-				if(adj[j][k] != 0){
-					infler_num += 1
-					break
-				}
+	//人数を流動的にして拡散を調べている
+	//	総フォロワー数を固定できていない
+	//拡散可能な人数を調べている
+	infler_num := 0
+	// OnlyInfler := true
+	for j := 0; j < len(adj); j++ {
+		for k := 0; k < len(adj); k++ {
+			if adj[j][k] != 0 {
+				infler_num += 1
+				break
 			}
 		}
-	
+	}
 
 	fmt.Println("start_DP")
 	// greedy_ans1, _, _ := opt.Greedy(0,100,adj,SeedSet_F_strong2, prob_map,pop_list,interest_list,assum_list,5,true,1000)
@@ -944,15 +943,16 @@ func main() {
 		use_follower = false
 
 		S_f_type = 2
-		for j:=1.0;j<10.0;j++{
-			if use_infl{
-				capacity = j*15
-			}else if use_follower{
-				capacity = j*30
-				}else{
+		for j := 1.0; j < 10.0; j++ {
+			if use_infl {
+				capacity = j * 5
+			} else if use_follower {
+				capacity = j * 30
+			} else {
 
 				capacity = j
 			}
+			fmt.Println(capacity)
 			use_DP(adj, interest_list, assum_list, user_weight, capacity, use_kaiki, use_user, use_infl, use_follower, 1, S_f_type, false)
 		}
 		//
