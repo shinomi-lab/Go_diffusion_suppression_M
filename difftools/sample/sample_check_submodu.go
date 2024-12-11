@@ -923,8 +923,10 @@ func main() {
 		// num2 := 0
 
 		// adjFilePath = "Graphs/adj_json50node.txt"
-		// adjFilePath = "adj_jsonTwitterInteractionUCongress.txt"
-		adjFilePath = "adj_json_egoTwitter_kirinuki.txt"
+		adjFilePath = "adj_jsonTwitterInteractionUCongress.txt"
+		use_congress := true
+		// use_congress := true
+		// adjFilePath = "adj_json_egoTwitter_kirinuki.txt"
 		adj, interest_list, assum_list = Make_adj_interest_assum(adjFilePath, seed)
 		fmt.Println("len adj", len(adj))
 		// os.Exit(0)
@@ -943,8 +945,11 @@ func main() {
 		use_follower = false
 
 		S_f_type = 2
-		for j := 1.0; j < 10.0; j++ {
-			if use_infl {
+		for j := 1.0; j < 5.0; j++ {
+			if use_infl && use_congress{
+				capacity = j * 100
+				// fmt.Println("okokokok")
+			} else if use_infl && !use_congress{
 				capacity = j * 5
 			} else if use_follower {
 				capacity = j * 30
@@ -952,7 +957,7 @@ func main() {
 
 				capacity = j
 			}
-			fmt.Println(capacity)
+			// fmt.Println(capacity)
 			use_DP(adj, interest_list, assum_list, user_weight, capacity, use_kaiki, use_user, use_infl, use_follower, 1, S_f_type, false)
 		}
 		//
