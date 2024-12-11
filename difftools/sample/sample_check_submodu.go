@@ -366,7 +366,8 @@ func use_DP(adj [][]int, interest_list [][]int, assum_list [][]int, user_weight 
 
 			if num > 20 && num < 30 {
 
-				if num2%2 == 0 { //個数調整
+				// if num2%2 == 0 { //個数調整 ego-twitter用
+				if num2%20 == 0 { //個数調整 congress用
 
 					SeedSet_F_strong2[focus_user] = 1 //虚偽情報の発信源を定義
 
