@@ -940,8 +940,8 @@ func main() {
 
 		// os.Exit(0)
 
-		use_user = false
-		use_infl = true
+		use_user = true 
+		use_infl = false
 		use_kaiki = false
 		use_follower = false
 
