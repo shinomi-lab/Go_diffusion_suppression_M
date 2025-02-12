@@ -291,7 +291,7 @@ func use_greedy(adj [][]int, interest_list [][]int, assum_list [][]int, user_wei
 	return adj, SeedSet_F_strong2, prob_map, pop_list, interest_list, assum_list
 }
 
-func use_DP(adj [][]int, interest_list [][]int, assum_list [][]int, user_weight float64, capacity float64, use_kaiki bool, use_user bool, use_infl bool, use_follower bool, nick int, S_f_type int, only_last bool) ([][]int, []int, [2][2][2][2]float64, [2]int, [][]int, [][]int) {
+func compute_maximization_DP(adj [][]int, interest_list [][]int, assum_list [][]int, user_weight float64, capacity float64, use_kaiki bool, use_user bool, use_infl bool, use_follower bool, nick int, S_f_type int, only_last bool) ([][]int, []int, [2][2][2][2]float64, [2]int, [][]int, [][]int) {
 
 	// var n int = 50
 	// var seesd int64 = 1
@@ -940,7 +940,7 @@ func main() {
 
 		// os.Exit(0)
 
-		use_user = true 
+		use_user = true
 		use_infl = false
 		use_kaiki = false
 		use_follower = false
@@ -959,7 +959,7 @@ func main() {
 				capacity = j
 			}
 			// fmt.Println(capacity)
-			use_DP(adj, interest_list, assum_list, user_weight, capacity, use_kaiki, use_user, use_infl, use_follower, 1, S_f_type, false)
+			compute_maximization_DP(adj, interest_list, assum_list, user_weight, capacity, use_kaiki, use_user, use_infl, use_follower, 1, S_f_type, false)
 		}
 		//
 		// fmt.Println()
